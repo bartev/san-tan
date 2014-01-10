@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>BARUG 2nd talk</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+
+
+
+
+</head>
+
+<body>
+<h1>BARUG 2nd talk</h1>
+
+<p>JJ Allaire</p>
+
+<p>link to slide deck</p>
+
+<p><a href="http://rpubs.com//jjallaire/rcpp-attributes-bayarea-useR">http://rpubs.com//jjallaire/rcpp-attributes-bayarea-useR</a></p>
+
+<p>some videos
+Moern c++
+not your father&#39;s c++
+<a href="http://goo.gl/N9YbS">http://goo.gl/N9YbS</a></p>
+
+<p>Clang: new c++ compiler
+<a href="http://goo.gl/ixNGP">http://goo.gl/ixNGP</a></p>
+
+<p>Learning Rcpp</p>
+
+<p>Rcpp Website: <a href="http://www.rcpp.org/">http://www.rcpp.org/</a></p>
+
+<p>Rcpp Book: <a href="http://www.rcpp.org/book/">http://www.rcpp.org/book/</a></p>
+
+<p>Rcpp for Beginners: <a href="http://goo.gl/If5Oz">http://goo.gl/If5Oz</a></p>
+
+<p>Rcpp Attributes: <a href="http://goo.gl/PIRN9">http://goo.gl/PIRN9</a></p>
+
+<p><a href="http://gallery.rcpp.org">http://gallery.rcpp.org</a> articles with full source code</p>
+
+<p>Rccp Attributes</p>
+
+<h1>Seamless C++ Integration with Rcpp Attributes</h1>
+
+<p>JJ Allaire</p>
+
+<p>Attributes are annotations added to C++ source files to provide 
+additional information to the compiler . <strong>Rcpp Attributes</strong> are a new 
+feature that provides a high-level syntax for declaring C++ functions 
+as callable from R and automatically generating the code required to 
+invoke them. The motivation for attributes is several-fold:</p>
+
+<ul>
+<li>Reduce the learning curve associated with using C++ and R together </li>
+<li>Eliminate boilerplate conversion and marshaling code wherever possible </li>
+<li>Seamless use of C++ within interactive R sessions </li>
+<li>Unified syntax for interactive work and package development</li>
+</ul>
+
+<p>Rcpp supports attributes to indicate that C++ functions should be made 
+available as R functions, as well as to optionally specify additional 
+build dependencies. The C++ file can then be interactively sourced 
+into R using the <code>sourceCpp</code> function, which makes all of the exported 
+C++ functions immediately available to the interactive R session. As a 
+result of eliminating both configuration and syntactic friction, the 
+workflow for C++ development in an interactive session now 
+approximates that of R code: simply write a function and call it.</p>
+
+<p>This talk will cover the motivation for and implementation of 
+attributes as well as review many practical examples of their use.</p>
+
+<hr/>
+
+<p>Why Rccp &amp; Rccp Attributes?
+<a href="http://www.rccp.org">http://www.rccp.org</a></p>
+
+<p>rccp
+write c++ expressions that look like R expressions (similar, not identical)</p>
+
+<ul>
+<li>R is meant to work with c &amp; fortran.</li>
+<li>There is no copying of data</li>
+<li>All you get is a <strong>pointer</strong> to the data</li>
+</ul>
+
+</body>
+
+</html>
+
