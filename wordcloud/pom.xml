@@ -1,0 +1,200 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <!--<parent>-->
+        <!--<groupId>com.identified.claws</groupId>-->
+        <!--<artifactId>claws</artifactId>-->
+        <!--<version>0.0.1-SNAPSHOT</version>-->
+    <!--</parent>-->
+    <groupId>com.bartev</groupId>
+    <artifactId>wordcloud</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
+
+    <properties>
+        <jdk.version>7</jdk.version>
+        <character.encoding>UTF-8</character.encoding>
+
+        <scala.version>2.10</scala.version>
+        <scala.full.version>2.10.0</scala.full.version>
+        <repository.url>http://mgmt-archiva-01:8080</repository.url>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- generic scala -->
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-library</artifactId>
+                <version>${scala.full.version}</version>
+            </dependency>
+
+            <!-- generic java -->
+            <!--<dependency>-->
+                <!--<groupId>org.projectlombok</groupId>-->
+                <!--<artifactId>lombok</artifactId>-->
+                <!--<version>0.11.6</version>-->
+                <!--<scope>provided</scope>-->
+            <!--</dependency>-->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>13.0.1</version>
+            </dependency>
+
+            <!-- logging -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.2</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.0.9</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>1.0.9</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-access</artifactId>
+                <version>1.0.9</version>
+            </dependency>
+            <dependency>
+                <groupId>org.clapper</groupId>
+                <artifactId>grizzled-slf4j_${scala.version}</artifactId>
+                <version>1.0.1</version>
+            </dependency>
+
+            <!-- test -->
+            <dependency>
+                <groupId>org.scalatest</groupId>
+                <artifactId>scalatest_${scala.version}</artifactId>
+                <version>2.0.M6-SNAP6</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>3.2.1.RELEASE</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.scalaj</groupId>
+                <artifactId>scalaj-http_${scala.version}</artifactId>
+                <version>0.3.6</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <dependencies>
+        <!--Other dependencies-->
+        <!--scala-->
+        <!--logging-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+            <!--<version>1.7.2</version>-->
+        </dependency>
+
+        <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.1-901.jdbc4</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.scalatest</groupId>
+                <artifactId>scalatest-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>identified-snapshots</id>
+            <url>http://mgmt-archiva-01:8080/repository/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>identified-releases</id>
+            <url>http://mgmt-archiva-01:8080/repository/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>identified-snapshots</id>
+            <url>http://mgmt-archiva-01:8080/repository/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>identified-releases</id>
+            <url>http://mgmt-archiva-01:8080/repository/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+</project>
