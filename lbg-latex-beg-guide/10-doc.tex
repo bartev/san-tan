@@ -1,0 +1,45 @@
+\documentclass{article}
+
+\usepackage{xspace}
+\usepackage{url}
+\usepackage{microtype}
+
+\newcommand{\TUG}{\textsc{\TeX\ Users Group}\xspace}
+\newcommand{\keyword}[2][\bfseries]{{#1#2}}
+
+\hyphenation{acro-nym}
+
+\begin{document}
+\title{Example 10}
+\author{Bartev Vartanian}
+\date{April 20, 2015}
+
+\maketitle
+
+\parbox{3cm}{TUG is an acronym. It means \TUG}
+Here is some more text along side the parbox.
+
+
+
+\parbox[b]{3cm}{TUG is an acronym. It means \TUG}
+Here is some more text along side the parbox.
+
+
+
+\parbox[t]{3cm}{TUG is an acronym. It means \TUG}
+Here is some more text along side the parbox.
+
+
+Text line
+\quad\parbox[b]{1.8cm}{this parbox is aligned at its bottom line}
+\quad\parbox{1.5cm}{center-aligned parbox}
+\quad\parbox[t]{2cm}{another parbox aligned at its top line}
+
+\fbox{\quad\parbox[b]{1.8cm}{this parbox is aligned at its bottom line}}
+\fbox{\quad\parbox{1.5cm}{center-aligned parbox}}
+\fbox{\quad\parbox[t]{2cm}{another parbox aligned at its top line}}\footnote{some footnote}
+
+\begin{minipage}{3cm}
+TUG is an acronym. It\footnote{some footnote in minipage} means \TeX Users Group TUG is an acronym. It means
+\end{minipage}
+\end{document}
