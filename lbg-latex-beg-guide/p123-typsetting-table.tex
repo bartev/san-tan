@@ -1,0 +1,26 @@
+\documentclass{article}
+
+\newcommand{\head}[1]{\textnormal{\textbf{#1}}}
+
+\begin{document}
+\begin{tabular}{c | c | c}
+\hline
+\head{Command} & \head{Declaration} & \head{Output}\\
+\hline
+\verb|\textrm| & \verb|\rmfamily| & \rmfamily Example text\\
+\verb|\textsf| & \verb|\sffamily| & \sffamily Example text\\
+\verb|\texttt| & \verb|\ttfamily| & \ttfamily Example text\\
+\hline
+\end{tabular}
+
+\section{formatting arguments} % (fold)
+\label{sec:formatting_arguments}
+\begin{tabular}{|l|c|r|p{1.7cm}|}
+\hline
+left & centered & right & a fully justified paragraph cell\\
+\hline
+l & c & r & p\\
+\hline
+\end{tabular}
+% section formatting_arguments (end)
+\end{document}

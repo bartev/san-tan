@@ -1,0 +1,23 @@
+\documentclass{article}
+
+\newcommand{\head}[1]{\textbf{#1}}
+
+\begin{document}
+\begin{tabbing}
+Family \= \verb|\textrm{...}| \= \head{Declaration} \= \kill
+\> \head{Command} \> \head{Declaration} \> \head{Example}\\
+Family
+  \> \verb|\textrm{...}| \> \verb|\rmfamily| \> \rmfamily Example text\\
+  \> \verb|\textsf{...}| \> \verb|\sffamily| \> \sffamily Example text\\
+  \> \verb|\texttt{...}| \> \verb|\ttfamily| \> \ttfamily Example text\\
+\end{tabbing}
+
+To automatically start at 1st tab stop, end line with \verb|\+\\|
+
+\begin{tabbing}
+Description \= Key \= Value \kill
+Description \= Key \= Value  \\
+Greeks \> a  \> $\alpha$ \+\\
+b \> $\beta$
+\end{tabbing}
+\end{document}

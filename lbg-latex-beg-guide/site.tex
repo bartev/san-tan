@@ -1,0 +1,57 @@
+\documentclass{article}
+\newcommand{\site}[2][http]{{\ttfamily #1://#2}}
+
+\usepackage{url}
+\begin{document}
+\site{www.tug.org}
+
+\site[ftp]{ctan.org}
+
+\url{https://use-this.org_my_way.com%-with$others.org}
+
+\parbox{3cm}{TUG is an acronym. It means \TeX\ Users Group.}
+\parbox{3.5cm}{TUG is an acronym. It means \TeX\ Users Group. \url{www.hello.com-org-https://use-this.org_my_way.com-with$others.org}}
+
+\fbox{\parbox{4cm}{TUG is an acronym. It means \TeX\ Users Group. \url{https://use-this.org_my_way.com-with$others.org}}}
+
+
+Text line
+   \quad\fbox{\parbox[b]{1.8cm}{this parbox is aligned at its bottom line}}
+   \quad\fbox{\parbox{1.5cm}{center-aligned parbox}}
+   \quad\fbox{\parbox[t]{2cm}{another parbox aligned at its top line}}
+
+
+Text line
+   \quad\fbox{\parbox[b][2in]{1.8cm}{this parbox is aligned at its bottom line}}
+   \quad\fbox{\parbox[c][2in]{1.5cm}{center-aligned parbox}}
+   \quad\fbox{\parbox[t][2in]{2cm}{another parbox aligned at its top line}}
+
+[t]
+
+Text line
+   \quad\fbox{\parbox[b][2in][t]{1.8cm}{this parbox is aligned at its bottom line}}
+   \quad\fbox{\parbox[c][2in][t]{1.5cm}{center-aligned parbox}}
+   \quad\fbox{\parbox[t][2in][t]{2cm}{another parbox aligned at its top line}}
+
+[c]
+
+Text line
+   \quad\fbox{\parbox[b][2in][c]{1.8cm}{this parbox is aligned at its bottom line}}
+   \quad\fbox{\parbox[c][2in][c]{1.5cm}{center-aligned parbox}}
+   \quad\fbox{\parbox[t][2in][c]{2cm}{another parbox aligned at its top line}}
+
+[b]
+
+Text line
+   \quad\fbox{\parbox[b][2in][b]{1.8cm}{this parbox is aligned at its bottom line}}
+   \quad\fbox{\parbox[c][2in][b]{1.5cm}{center-aligned parbox}}
+   \quad\fbox{\parbox[t][2in][b]{2cm}{another parbox aligned at its top line}}
+
+[s]
+
+Text line
+   \quad\fbox{\parbox[b][2in][s]{1.8cm}{this parbox is aligned at its bottom line}}
+   \quad\fbox{\parbox[c][2in][s]{1.5cm}{center-aligned parbox}}
+   \quad\fbox{\parbox[t][2in][s]{2cm}{another parbox aligned at its top line}}
+
+\end{document}

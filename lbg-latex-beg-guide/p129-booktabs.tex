@@ -1,0 +1,34 @@
+\documentclass{article}
+
+\usepackage{booktabs}
+\newcommand{\head}[1]{\textnormal{\textbf{#1}}}
+\newcommand{\bsl}[1]{\textbackslash#1}
+\begin{document}
+\section{Using booktabs} % (fold)
+\label{sec:using_booktabs}
+
+\texttt{booktabs}: enhance the quality of your tables by new line commands replacing \verb|\hline| and \verb|\cline|.
+
+\begin{tabular}{ccc}
+\toprule[1.5pt]
+\head{Command} & \head{Declaration} & \head{Output}\\
+\midrule
+\verb|\textrm| & \verb|\rmfamily| & \rmfamily Example text\\
+\verb|\textsf| & \verb|\sffamily| & \sffamily Example text\\
+\verb|\texttt| & \verb|\ttfamily| & \ttfamily Example text\\
+\bottomrule[1.5pt]
+\end{tabular}
+
+\vskip[1cm]
+\noindent
+Horizontal lines (rules) using \texttt{booktabs}
+\begin{itemize}
+  \item \texttt{\bsl{toprule}[thickness]} draw a horizontal line at the top of the table
+  \item \texttt{\bsl{midrule}[thickness]}
+  \item \texttt{\bsl{bottomrule}[thickness]}
+  \item \texttt{\bsl{cmidrule}[thickness](trim){m-n}}
+  \item No vertical lines
+  \item No double lines
+\end{itemize}
+% section using_booktabs (end)
+\end{document}

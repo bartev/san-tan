@@ -1,0 +1,45 @@
+\documentclass{article}
+
+\usepackage{enumitem}
+
+% achieve very compact lists analogous to the compact paralist environment
+\setlist{nolistsep}
+% modifies properties of bulleted lists. Here we chose an em dash
+% as the label to get a leading wide dash
+\setitemize[1]{label=---}
+% sets properties valid for numbered lists. We used it to set a
+% label and a font for the label
+\setenumerate[1]{label=\textcircled{\scriptsize\Alph*},font=\sffamily}
+\setenumerate[2]{label={\scriptsize\roman*.},font=\sffamily,start=1}
+
+\begin{document}
+\noindent
+Look at the subsection in the middle of the list.
+The counting continues from where it left off by using
+
+\verb![resume*]!
+
+\vspace{0.5in}
+
+\begin{enumerate}
+  \item State the paper size by an option to the document class
+  \item Determine the margin dimensions using one of these packages:
+  \begin{enumerate}
+    \item geometry
+    \item typearea
+  \end{enumerate}
+  \item Customize header and footer by one of these packages:
+  \begin{itemize}
+    \item fancyhdr
+    \item scrpage2
+  \end{itemize}
+  \end{enumerate}
+  \subsubsection*{Tweaking the line spacing:} % (fold)
+  \begin{enumerate}[resume*]
+  \item Adjust the line spacing for the whole document
+  \begin{itemize}
+    \item by using the setspace package
+    \item or by the command \verb|\linespread{factor}|
+  \end{itemize}
+\end{enumerate}
+\end{document}
