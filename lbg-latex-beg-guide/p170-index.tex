@@ -1,0 +1,57 @@
+\documentclass{book}
+
+\setcounter{tocdepth}{3}
+% \renewcommand{\figurename}{Diagram}
+% \renewcommand{\listfigurename}{List of Diagrams}
+
+\usepackage{index}
+\makeindex
+
+\begin{document}
+\tableofcontents
+\listoffigures
+
+\part{First Part}
+\chapter{Preface}
+\addcontentsline{toc}{chapter}{Preface}
+
+\chapter{First main chapter}
+
+\section{A section} % (fold)
+\begin{figure}
+\centering
+\fbox{Diagram placeholder}
+\caption{\index{enterprise} Enterprize Org Chart}
+\end{figure}
+
+\section{Another section} % (fold)
+\subsection{A \index{network} smaller section} % (fold)
+\subsubsection[Deeper level]{This section has an even deeper level} % (fold)
+\chapter{Second main chapter}
+
+\index{enterprise}Enterprise is another word.
+\part{Second part} % (fold)
+\chapter{Third main capter}
+\addtocontents{lof}{\index{network} Network Diagrams:}
+\begin{figure}
+\centering
+\fbox{Diagram Placeholder}
+\caption{\index{network!overview} Network overview}
+\end{figure}
+\begin{figure}
+\centering
+\fbox{Diagra placeholder}
+\caption{WLAN Design}
+\end{figure}
+
+\appendix
+\cleardoublepage
+\addtocontents{toc}{\bigskip}
+\addcontentsline{toc}{part}{Appendix}
+\chapter{Glossary}
+\chapter{Symbols}
+
+\clearpage
+\addcontentsline{toc}{chapter}{Index}
+\printindex
+\end{document}

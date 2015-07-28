@@ -1,0 +1,40 @@
+\documentclass{article}
+
+\usepackage{array}
+
+\setlength{\extrarowheight}{4pt}
+\begin{document}
+\begin{tabular}{@{}>{\itshape}ll!{:}l<{.}@{}}
+  \hline
+  Info: & Software & \LaTeX\\
+  & Author & Leslie Lamport\\
+  & Website & www.latex-project.org\\
+  \hline
+\end{tabular}
+
+\noindent
+Note, the use of \verb|@{}| in the prior example removed space from the beginning and end of the line
+
+\setlength{\extrarowheight}{0pt}
+
+\begin{tabular}{>{\itshape}ll!{:}l<{.}}
+  \hline
+  Info: & Software & \LaTeX\\
+  & Author & Leslie Lamport\\
+  & Website & www.latex-project.org\\
+  \hline
+\end{tabular}
+
+\noindent
+Add vertical space (10pt) after the first line
+
+\begin{tabular}{>{\itshape}ll!{:}l<{.}}
+  \hline
+  Info: & Software & \LaTeX\\[10pt]
+  & Author & Leslie Lamport\\
+  & Website & www.latex-project.org\\
+  \hline
+\end{tabular}
+
+
+\end{document}

@@ -1,0 +1,34 @@
+\documentclass{article}
+
+\usepackage{array}
+\usepackage{booktabs}
+
+\newcommand{\head}[1]{\textnormal{\textbf{#1}}}
+\newcommand{\normal}[1]{\multicolumn{1}{l}{#1}}
+\newcommand{\bsl}[1]{\textbackslash#1}
+\newcommand{\code}[1]{\textbackslash\ttfamily#1}
+
+\begin{document}
+\section{Define formatting commands for table} % (fold)
+\label{sec:define_formatting_commands_for_table}
+
+% section define_formatting_commands_for_table (end)
+
+
+% \begin{tabular}{@{}*3l@{}}
+% \begin{tabular}{@{}l*2{>{\textbackslash\ttfamily}l}l%
+       % <{Example text}@{}}
+\begin{tabular}{@{}l*2{>{\code}l}l%
+       <{Example text}@{}}
+\toprule[1.5pt]
+& \multicolumn{2}{c}{\head{Input}} &
+  \multicolumn{1}{c}{\head{Output}}\\
+& \normal{\head{Command}}  & \normal{\head{Declaration}} & \normal{} \\
+\cmidrule(lr){2-3} \cmidrule(l){4-4}
+Family & textrm & rmfamily & \rmfamily \\
+& textsf & sffamily & \sffamily \\
+& texttt & ttfamily & \ttfamily \\
+\bottomrule[1.5pt]
+\end{tabular}
+% section using_booktabs (end)
+\end{document}

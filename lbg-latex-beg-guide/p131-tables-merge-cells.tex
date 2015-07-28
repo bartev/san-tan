@@ -19,8 +19,6 @@
 \bottomrule[1.5pt]
 \end{tabular}
 
-% \vskip
-
 
 \noindent
 Horizontal lines (rules) using \texttt{booktabs}
@@ -28,9 +26,21 @@ Horizontal lines (rules) using \texttt{booktabs}
   \item \texttt{\bsl{toprule}[thickness]} draw a horizontal line at the top of the table
   \item \texttt{\bsl{midrule}[thickness]}
   \item \texttt{\bsl{bottomrule}[thickness]}
-  \item \texttt{\bsl{cmidrule}[thickness](trim){m-n}}
+  \item \texttt{\bsl{cmidrule}[thickness](trim)\{m-n\}}
   \item No vertical lines
   \item No double lines
 \end{itemize}
+
+\begin{tabular}{@{}*3l@{}}
+\toprule[1.5pt]
+\multicolumn{2}{c}{\head{Input}} &
+  \multicolumn{1}{c}{\head{Output}}\\
+\head{Command}  & \head{Declaration} & \\
+\cmidrule(r){1-2} \cmidrule(l){3-3}
+\verb|\textrm| & \verb|\rmfamily| & \rmfamily Example text\\
+\verb|\textsf| & \verb|\sffamily| & \sffamily Example text\\
+\verb|\texttt| & \verb|\ttfamily| & \ttfamily Example text\\
+\bottomrule[1.5pt]
+\end{tabular}
 % section using_booktabs (end)
 \end{document}
