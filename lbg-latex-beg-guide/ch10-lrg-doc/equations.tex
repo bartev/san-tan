@@ -1,0 +1,23 @@
+\documentclass{scrbook}
+
+\input{preamble}
+
+% \includeonly{chapter2}
+\begin{document}
+\frontmatter
+\include{title}
+\include{dedication}
+\tableofcontents
+\listoftables
+\listoffigures
+
+\mainmatter
+\include{chapter1}
+\include{chapter2}
+
+\backmatter
+\include{proofs}
+\nocite{*}
+\bibliographystyle{plainnat}
+\bibliography{tex}
+\end{document}

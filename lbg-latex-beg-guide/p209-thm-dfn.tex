@@ -1,0 +1,43 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+
+\newtheorem{thm}{Theo:}
+\newtheorem{dfn}[thm]{Def:}
+
+\begin{document}
+\begin{dfn}
+
+A quadratic equation is an equation of the form
+\begin{equation}
+  \label{quad}
+  ax^2 + bx + c = 0,
+\end{equation}
+where \(a, b\) and \(c \) are constants and $a \neq 0$,
+\end{dfn}
+
+\begin{thm}
+A quadratic equation (\ref{quad}) has two solutions for the variable $x$:
+\begin{equation}
+  \label{root}
+  x_{1, 2} = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}.
+\end{equation}
+\end{thm}
+If the \emph{discriminant} $\Delta$ with
+$$
+\Delta = b^2 - 4 a c
+$$
+is zero, then the equation (\ref{quad}) has a double solution:
+(\ref{root}) becomes
+$$
+x = -\frac{b}{2a}.
+$$
+
+\begin{equation}
+   x_1^2 + x_2^2 = 1, \quad 2^{2^x} = 64
+\end{equation}
+
+\begin{equation}
+   \sqrt[64]{x} = \sqrt{\sqrt{\sqrt{\sqrt{\sqrt{\sqrt{x}}}}}}
+\end{equation}
+\end{document}
