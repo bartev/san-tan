@@ -1,0 +1,17 @@
+# PyYAML>=3.10
+# ai.aos.common>=1.0.0a4
+# ai.aos.fraud>=1.0.0a4
+# ai.aos.modeling>=1.0.46
+# ai.athena.lookups>=0.0.7
+# ai.clearcommerce>=1.0.0a9
+# ai.cli>=1.0.0
+# ai.datetools>=1.2.0
+# ai.featuretables>=1.2.0
+# ai.modeling
+# ai.tabletools>=1.5.0
+# ai.teradata>=2.0.0,<3.0.0a0,!=2.0.3
+ipython-genutils>=0.1.0
+ipython[all]>=4.0.0
+seaborn
+# ipywidgets
+numexpr
