@@ -49,6 +49,9 @@ class Fraction:
 
         return first_num == second_num
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
 
 def main():
     myfraction = Fraction(1, 4)
