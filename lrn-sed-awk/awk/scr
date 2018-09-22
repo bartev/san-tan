@@ -1,0 +1,4 @@
+# test for integer, string empty line
+/[0-9]+/    {print "that is an integer"}
+/[A-Za-z]+/ {print "this is a string"}
+/^$/        {print "this is a blank line."}

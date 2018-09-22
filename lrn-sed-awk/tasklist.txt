@@ -1,0 +1,3 @@
+/Users/bartev/dev/gitpie/ac-hydra-sia/pdfs/IT-TESTING-SETUP-HYDRA.pdf
+/Users/bartev/dev/gitpie/ac-hydra-sia/IT-TESTING-SETUP-HYDRA.rst
+/Users/bartev/dev/gitpie/ac-hydra-sia/CHANGELOG.md

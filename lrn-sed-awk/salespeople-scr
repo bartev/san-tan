@@ -1,0 +1,12 @@
+/Northeast$/{
+  s///
+  s/  *$//
+  w region.northeast
+  }
+/South$/{
+  s///
+  s/  *$//
+  w region.south
+  }
+/Midwest$/w region.midwest
+/West$/w region.west
