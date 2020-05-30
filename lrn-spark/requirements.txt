@@ -1,0 +1,8 @@
+pandoc
+pypandoc
+scikit-learn
+pandas
+jupyter
+mleap
+pyspark==2.4.5
+
