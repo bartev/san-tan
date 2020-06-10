@@ -1,0 +1,14 @@
+Ch 3.
+
+**********
+blogsDF.sort(col("Id").desc).show()
+
+should be `.desc()`
+
+**********
+from pyspark.sql.type import *
+
+should be: types
+
+**********
+.distinctCount() -> .distinct().count()
