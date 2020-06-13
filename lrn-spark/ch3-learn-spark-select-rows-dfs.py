@@ -484,9 +484,10 @@ from pyspark.sql.types import *
 # In[126]:
 
 
-people_schema = StructType([StructField('name', StringType(), True),
-                           StructField('age', IntegerType(), True),
-                           StructField('job', StringType(), True)])
+people_schema = StructType(
+    [StructField('name', StringType(), True),
+     StructField('age', IntegerType(), True),
+     StructField('job', StringType(), True)])
 
 
 # ## infer schema from a smaller sample
@@ -515,12 +516,26 @@ people_df = spark.read.csv(people_file,
 
 # ### Can separate out options
 
-# In[140]:
+# In[143]:
 
 
 (spark
  .read
  .option('header', 'true')
+ .option('schema', people_schema)
+ .option('sep', ';')
+ .csv(people_file)
+ .show())
+
+
+# ### option `True` or `"true"` - both ok
+
+# In[146]:
+
+
+(spark
+ .read
+ .option('header', True)
  .option('schema', people_schema)
  .option('sep', ';')
  .csv(people_file)
@@ -533,82 +548,151 @@ people_df = spark.read.csv(people_file,
 people_df.show()
 
 
-# In[ ]:
+# ## `DataFrameWriter`
+
+# Parquet
+# 
+# * default format
+# * uses compression
+# * preserves schema as part of metadata
+
+# In[149]:
 
 
-people_tbl = people_df.write.format('parquet').save('people.parquet')
+people_tbl = (people_df
+              .write
+              .format('parquet')
+              .mode('overwrite')
+              .save('people.parquet'))
 
 
-# In[ ]:
+# In[151]:
 
 
-spark.read.parquet('people.parquet')
+spark.read.parquet('people.parquet').show()
 
 
-# In[ ]:
+# In[155]:
 
 
 parquet_table = 'people_tbl'
 (people_df.write
     .format('parquet')
+    .mode('overwrite')
     .saveAsTable(parquet_table))
 
 
 # ## Projections and filters
 
-# In[ ]:
+# * projection
+#     * `select()`
+# * filter
+#     * `filter()`
+#     * `where()`
+
+# In[156]:
 
 
-people_df = spark.read.csv(people_file, header=True, schema=people_schema, sep=';')
+people_df = spark.read.csv(people_file, header=True, 
+                           schema=people_schema, sep=';')
 
 
-# In[ ]:
+# In[157]:
 
 
-(people_df.select('age')
-     .where('age > 30')
-    .show())
+people_df.show()
 
 
-# In[ ]:
+# ### sql like
+
+# In[162]:
+
+
+(people_df
+ .select('age', 'name')
+ .where('age != 30')
+ .show())
+
+
+# ### use `col`
+
+# In[161]:
+
+
+(people_df
+ .select('age', 'name')
+ .where(col('age') > 30)
+ .show())
+
+
+# ### use an `expr`
+
+# In[160]:
+
+
+(people_df
+ .select('age', 'name')
+ .where(expr('age > 30'))
+ .show())
+
+
+# ## Load movies
+
+# In[165]:
 
 
 movie_fname = '/Users/bartev/dev/github-bv/san-tan/lrn-spark/Data-ML-100k--master/ml-100k/u.item'
 
 
-# In[ ]:
+# In[166]:
 
 
 movies_df = spark.read.csv(movie_fname, header=False, sep='|')
 
 
-# In[ ]:
+# In[167]:
+
+
+movies_df.show(3)
+
+
+# ## Rename columns
+
+# In[169]:
+
+
+movies = (movies_df
+ .select('_c0', '_c1', '_c2', '_c4')
+ .withColumnRenamed('_c0', 'id')
+ .withColumnRenamed('_c1', 'title')
+ .withColumnRenamed('_c2', 'date')
+ .withColumnRenamed('_c4', 'url')
+)
+movies.show(5)
+
+
+# In[182]:
+
+
+movies.schema
+
+
+# In[181]:
 
 
 # Rename columns
 
-(movies_df
- .select('_c0', '_c1', '_c2', '_c4')
- .withColumnRenamed('_c0', 'id')
- .withColumnRenamed('_c1', 'title')
- .withColumnRenamed('_c2', 'date')
- .withColumnRenamed('_c4', 'url')
+(movies
  .where('date > "1996-01-01"')
  .where('id > 30')
-#  .schema
  .show(5)
 )
 
 
-# In[ ]:
+# In[174]:
 
 
-(movies_df
- .select('_c0', '_c1', '_c2', '_c4')
- .withColumnRenamed('_c0', 'id')
- .withColumnRenamed('_c1', 'title')
- .withColumnRenamed('_c2', 'date')
- .withColumnRenamed('_c4', 'url')
+(movies
  .where('date > "1996-01-01"')
  .where('id > 30')
 #  .schema
@@ -641,39 +725,34 @@ movies_df = spark.read.csv(movie_fname, header=False, sep='|')
 
 # ## Change data types
 
-# In[ ]:
+# In[183]:
 
 
-movies_df2 = (movies_df
- .select('_c0', '_c1', '_c2', '_c4')
- .withColumnRenamed('_c0', 'id')
- .withColumnRenamed('_c1', 'title')
- .withColumnRenamed('_c2', 'date')
- .withColumnRenamed('_c4', 'url')
+movies_df2 = (movies
  .where('id > 30')
  .select('id', 'date')
 )
 
 
-# In[ ]:
+# In[184]:
 
 
 movies_df2.count()
 
 
-# In[ ]:
+# In[185]:
 
 
 movies_df2.schema
 
 
-# In[ ]:
+# In[186]:
 
 
 movies_df2.show(10)
 
 
-# In[ ]:
+# In[187]:
 
 
 movies_df2.describe().show()
@@ -681,14 +760,64 @@ movies_df2.describe().show()
 
 # ### Date functions
 
-# In[ ]:
+# aside: simple example from help docs
 
+# In[211]:
+
+
+df = spark.createDataFrame([('2020-06-13 12:52', )], ['t'])
+
+print(df.collect())
+
+print(df.select('t', to_date(df.t).alias('date')).collect())
+
+print(df.select('t', to_date(df.t, 'yyyy-MM-dd').alias('date')).collect())
+
+
+# ### convert to date, and rename
+
+# In[222]:
+
+
+df.select(to_date(col('t')).alias('other')).collect()
+
+
+# In[226]:
+
+
+(df.select('t', 
+          col('t').alias('first'),
+          to_date(col('t')).alias('other'))
+#  .collect()
+#  .show()
+ .schema
+)
+
+
+# In[230]:
+
+
+F.current_timestamp
+
+
+# In[251]:
+
+
+from pyspark.sql.functions import to_date, to_timestamp, col, date_format
+from pyspark.sql.functions import current_date, current_timestamp
 
 (movies_df2
- .withColumn('new_date', F.to_date(F.col('date'), 'dd-MMM-yyyy'))
- .withColumn('new_ts', F.to_timestamp(F.col('date'), 'dd-MMM-yyyy'))
- .where(F.col('new_date') < '1990-01-01')
- .show())
+ .withColumn('new_date', to_date(col('date'), 'dd-MMM-yyyy'))
+ .withColumn('new_ts', to_timestamp(col('date'), 'dd-MMM-yyyy'))
+ .withColumn('new_ts', date_format(col('new_ts'), 'yyyy.MMM.dd E'))
+
+ .withColumn('cur_date', current_date())
+ .withColumn('cur_ts', date_format(current_timestamp(), 'MM-yyyy'))
+ .where(col('new_date') < '1990-01-01')
+#  .show()
+ .printSchema()
+#  .schema
+)
 
 
 # ### order by year
@@ -699,10 +828,10 @@ movies_df2.describe().show()
 import pyspark.sql.functions as F
 
 
-# In[ ]:
+# In[253]:
 
 
-(movies_df2
+(movies
  .withColumn('new_date', F.to_date(F.col('date'), 'dd-MMM-yyyy'))
  .withColumn('new_ts', F.to_timestamp(F.col('date'), 'dd-MMM-yyyy'))
  .where(F.col('new_date') < '1990-01-01')
@@ -710,6 +839,7 @@ import pyspark.sql.functions as F
  .withColumn('year', F.year('new_date'))
  .withColumn('month', F.month('new_date'))
  .where(F.col('month') != 1)
+ .filter('month > 4')
  .show())
 
 
@@ -717,61 +847,69 @@ import pyspark.sql.functions as F
 
 # ### With `repartition`
 
-# In[ ]:
+# In[256]:
 
 
-(movies_df2
-    .withColumn('year', F.year(F.to_date(F.col('date'), 'dd-MMM-yyyy')))
-     .select('year')
-     .distinct()
-     .orderBy('year')
-     .where('date != "null"')
-     .repartition(1)
-    .write
+(movies
+ .withColumn('year', F.year(F.to_date(F.col('date'), 'dd-MMM-yyyy')))
+ .select('year')
+ .distinct()
+ .orderBy('year')
+ .where('date != "null"')
+ .repartition(1)
+ .write
  .format('csv')
- .option('header', 'true')
+ .option('header', True)
+ .mode('overwrite')
  .save('movie_dates.csv')
 )
 
 
 # ### with `coalesce`
 
-# In[ ]:
+# In[264]:
 
 
-(movies_df2
-    .withColumn('year', F.year(F.to_date(F.col('date'), 'dd-MMM-yyyy')))
-     .select('year')
-     .distinct()
-     .orderBy('year')
-     .where('date != "null"')
-     .coalesce(1)
-    .write
+(movies
+ .withColumn('year', F.year(F.to_date(F.col('date'), 'dd-MMM-yyyy')))
+ .select('year')
+ .distinct()
+ .orderBy('year')
+ .where('date != "null"')
+ .coalesce(1)
+ .write
  .format('csv')
  .option('header', 'true')
+ .mode('overwrite')
  .save('movie_dates_coalesce.csv')
 )
 
 
 # ### with `pandas`
 
-# In[ ]:
+# In[269]:
 
 
-(movies_df2
-    .withColumn('year', F.year(F.to_date(F.col('date'), 'dd-MMM-yyyy')))
-     .select('year')
-     .distinct()
-     .orderBy('year')
-     .where('date != "null"')
-    .toPandas()
+(movies
+ .withColumn('year', F.year(F.to_date(F.col('date'), 'dd-MMM-yyyy')))
+ .select('year', 'date')
+ .distinct()
+ .orderBy('year')
+ .where('date != "null"')
+ .toPandas()
  .to_csv('movie_dates_pandas.csv', header=True, index=False)
 )
 
 
 # ## Aggregates
 
-# In[ ]:
+# In[270]:
+
+
+movies.show()
+
+
+# In[274]:
 
 
 movies_df = (spark.read
@@ -784,10 +922,69 @@ movies_df = (spark.read
              .where('id > 30')
              .select('id', 'date', 'title', 'url')
 )
+
+print(f'{movies_df.count()} rows')
+
 movies_df.show()
 
 
-# In[ ]:
+# In[275]:
+
+
+movies_df.toPandas().head(3)
+
+
+# ### String replacement using `regexp_repl`
+
+# In[289]:
+
+
+from pyspark.sql.functions import split, regexp_replace
+
+(movies_df
+ .withColumn('tit2', split('url', 'title-exact\?')[1])
+ .withColumn('tit2', regexp_replace('tit2', '%20', ' '))
+ .show())
+
+
+# In[293]:
+
+
+from pyspark.sql.functions import year
+
+
+# In[304]:
+
+
+(movies_df
+ .where(col('date').isNotNull())
+ .select('date')
+ .withColumn('dt', to_date('date', 'dd-MMM-yyyy'))
+ .withColumn('yr', year(to_date(col('date'), 'dd-MMM-yyyy')))
+ .groupBy('yr')
+ .count()
+ .orderBy('count', ascending=False)
+ .show(truncate=False))
+
+
+# In[321]:
+
+
+tmp = (movies_df
+ .where(col('date').isNotNull())
+ .select('date')
+ .withColumn('dt', to_date('date', 'dd-MMM-yyyy'))
+ .withColumn('yr', year(to_date(col('date'), 'dd-MMM-yyyy')))
+ .groupBy('yr')
+ .count()
+ .orderBy('count', ascending=False)
+#  .select(F.sum('count'), F.avg('count'), F.stddev('count'), F.min('count'), F.max('count'))
+#  .show(truncate=False)
+)
+tmp.show()
+
+
+# In[290]:
 
 
 (movies_df
