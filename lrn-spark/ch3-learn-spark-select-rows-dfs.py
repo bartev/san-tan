@@ -967,7 +967,7 @@ from pyspark.sql.functions import year
  .show(truncate=False))
 
 
-# In[321]:
+# In[325]:
 
 
 tmp = (movies_df
@@ -977,7 +977,7 @@ tmp = (movies_df
  .withColumn('yr', year(to_date(col('date'), 'dd-MMM-yyyy')))
  .groupBy('yr')
  .count()
- .orderBy('count', ascending=False)
+#  .orderBy('count', ascending=False)
 #  .select(F.sum('count'), F.avg('count'), F.stddev('count'), F.min('count'), F.max('count'))
 #  .show(truncate=False)
 )
@@ -998,6 +998,20 @@ tmp.show()
  .show())
 
 
+# In[347]:
+
+
+(movies_df
+ .where(F.col('date').isNotNull())
+ .withColumn('new_date', F.to_date('date', 'dd-MMM-yyyy'))
+ .withColumn('year', F.year(F.to_date(F.col('date'), 'dd-MMM-yyyy')))
+ .groupBy('year')
+ .count()
+ .orderBy('count', ascending=False)
+ .select(F.sum('count'), F.avg('count'), F.stddev('count'), F.min('count'), F.max('count'))
+ .explain(True))
+
+
 # In[ ]:
 
 
@@ -1012,47 +1026,27 @@ tmp.show()
  .printSchema())
 
 
+# # End-to-End dataframe example
+
+# See Databricks Community Edition Notebooks
+
 # # Datasets API
 
-# In[ ]:
+# In[334]:
 
 
 from pyspark.sql import Row
+
 row = Row(350, True, 'Learning Spark 2E', None)
 
 
-# In[ ]:
-
-
-row
-
-
-# In[ ]:
-
-
-from pyspark.sql import Row
-row = Row(350, True, "Learning Spark 2E", None)
-
-
-# In[ ]:
-
-
-row[0]
-
-
-# In[ ]:
-
-
-row[1]
-
-
-# In[ ]:
+# In[341]:
 
 
 [r for r in row]
 
 
-# In[ ]:
+# In[336]:
 
 
 type(row)
