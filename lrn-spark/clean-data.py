@@ -304,6 +304,50 @@ df
 df5.schema
 
 
+# # How many unique values?
+
+# In[121]:
+
+
+df.show()
+
+
+# In[123]:
+
+
+df.distinct().show()
+
+
+# In[124]:
+
+
+{c:df.select(c).distinct().count() for c in df.columns}
+
+
+# In[126]:
+
+
+from pyspark.sql.functions import col, countDistinct
+
+
+# In[137]:
+
+
+cat_cols = ['name', 'person']
+
+
+# In[143]:
+
+
+(df.select(cat_cols)
+ .agg(*(countDistinct(col(c)).alias(c) for c in cat_cols))
+ .toPandas()
+ .T
+ .rename(columns={0:'num_uniq'})
+#  .max()
+)
+
+
 # In[ ]:
 
 
