@@ -822,6 +822,224 @@ on a.iata = f.origin""").show()
 
 # ![image.png](attachment:image.png)
 
+# Let’s start with a review of the TotalDelays (calculated by the sum(Delay)) with flights originating from Seattle, San Francisco, and New York City (JFK) and a specific set of destination locations as noted by the following query.
+# 
+# 
+
+# ### in SQL
+
+# ERROR : this is failing due to lack of hive support
+
+# In[187]:
+
+
+q1 = """
+drop table if exists departureDelaysWindow
+"""
+q2 = """
+create table departureDelaysWindow as
+select origin, destination, sum(delay) as total_delays
+from departureDelays
+where 1=1
+and origin in ('SEA', 'SFO', 'JFK')
+and destination in ('SEA', 'SFO', 'JFK', 'DEN', 'ORD', 'LAX', 'ATL')
+group by origin, destination
+"""
+q3 = """
+select * from departureDelaysWindow
+"""
+spark.sql(q1)
+spark.sql(q2)
+spark.sql(q3).show()
+
+
+# In[192]:
+
+
+q = """
+select origin, destination, sum(delay) as total_delays
+from departureDelays
+where 1=1
+and origin in ('SEA', 'SFO', 'JFK')
+and destination in ('SEA', 'SFO', 'JFK', 'DEN', 'ORD', 'LAX', 'ATL')
+group by origin, destination
+
+"""
+dep_delays_window = spark.sql(q)
+dep_delays_window.createOrReplaceTempView('depDelaysWindow')
+
+
+# In[191]:
+
+
+dep_delays_window.orderBy('origin', 'destination').show()
+
+
+# In[194]:
+
+
+spark.sql("""
+select t.*
+from (select 
+        origin, 
+        destination, 
+        total_delays, 
+        dense_rank() over (partition by origin order by total_delays desc) as rank
+        from depDelaysWindow
+        ) t
+where rank <= 3
+      """).show()
+
+
+# In[195]:
+
+
+spark.sql("""
+select t.*
+from (select 
+        *, 
+        dense_rank() over (partition by origin order by total_delays desc) as rank
+        from depDelaysWindow
+        ) t
+where rank <= 3
+      """).show()
+
+
+# In[196]:
+
+
+spark.sql("""
+select t.*
+from (select 
+        *, 
+        dense_rank() over (partition by origin order by total_delays desc) as rank
+        from dep_delays_window
+        ) t
+where rank <= 3
+      """).show()
+
+
+# ### how can I do this with the DataFrame API?
+
+# In[ ]:
+
+
+how can I do this with the DataFrame API
+
+
+# In[201]:
+
+
+from pyspark.sql.window import Window
+
+
+# In[203]:
+
+
+window_spec = (
+    Window
+    .partitionBy(dep_delays_window['origin'])
+    .orderBy(dep_delays_window['total_delays'].desc())
+)
+
+
+# ## Modification
+
+# In[205]:
+
+
+foo.show()
+
+
+# ### Add new column
+
+# In[206]:
+
+
+from pyspark.sql.functions import expr
+
+
+# In[210]:
+
+
+foo2 = (foo
+ .withColumn('status',
+             expr("case when delay <= 10 then 'on-time' else 'late' end"))
+)
+
+foo2.show()
+
+
+# ### Drop a column
+
+# In[211]:
+
+
+foo3 = foo2.drop('delay')
+foo3.show()
+
+
+# ### Rename columns
+
+# In[212]:
+
+
+foo4 = foo3.withColumnRenamed('status', 'flight_status')
+foo4.show()
+
+
+# ### Pivoting
+
+# #### in SQL
+
+# In[217]:
+
+
+spark.sql("""
+SELECT * FROM (
+SELECT destination, month, delay 
+  FROM foo WHERE origin = 'SEA' 
+) 
+PIVOT (
+  CAST(AVG(delay) AS DECIMAL(4, 2)) as AvgDelay, MAX(delay) as MaxDelay
+  FOR month IN (1 JAN, 2 FEB)
+)
+ORDER BY destination
+""").show()
+
+
+# In[218]:
+
+
+spark.sql("""
+SELECT * FROM (
+SELECT destination, month, delay 
+  FROM foo WHERE origin = 'SEA' 
+) 
+PIVOT (
+  CAST(AVG(delay) AS DECIMAL(4, 2)) as AvgDelay, MAX(delay) as MaxDelay
+  FOR month IN (1 JAN, 2, 3)
+)
+ORDER BY destination
+""").show()
+
+
+# In[226]:
+
+
+spark.sql("""
+SELECT * FROM (
+SELECT destination, month, delay 
+  FROM departureDelays WHERE origin = 'SEA' 
+) 
+PIVOT (
+  CAST(AVG(delay) AS DECIMAL(4, 2)) as AvgDelay, MAX(delay) as MaxDelay
+  FOR month IN (1 JAN, 2 FEB)
+)
+ORDER BY destination
+""").show()
+
+
 # In[ ]:
 
 
