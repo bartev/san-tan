@@ -11,11 +11,13 @@ display(HTML("<style>.container { width:95% !important; }</style>"))
 # # Create an RDD of tuples
 
 # ## setup `SparkContext`
+
+# In[2]:
+
+
 from pyspark import SparkContext
 
 sc = SparkContext('local', 'First App')
-# In[4]:
-
 
 def get_sc():
     """get a SparkContext (don't recreate)"""
@@ -27,15 +29,7 @@ def get_sc():
     else:
         print('not redefining sc')
         sc = globals()['sc']
-    return sc
-
-
-# In[3]:
-
-
-sc = get_sc()
-
-
+    return scsc = get_sc()
 # In[5]:
 
 
