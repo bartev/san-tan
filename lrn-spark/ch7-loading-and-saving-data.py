@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Description - Chapter 7. Loading and Saving Your Data
+# # Chapter 7. Loading and Saving Your Data
 # 
 # In this chapter, we discuss strategies to organize data such as bucketing and partitioning data for storage, compression schemes, splittable and non-splittable files, and Parquet files.
 # 
@@ -15,10 +15,6 @@
 from IPython.core.display import display, HTML
 display(HTML("<style>.container { width:95% !important; }</style>"))
 
-
-# In[2]:
-
-
 from pyspark import SparkContext
 from pyspark.sql import SparkSession
 
@@ -30,16 +26,8 @@ spark = (SparkSession
     .appName("ch7 example")
     .getOrCreate())
 
-
-# In[33]:
-
-
 import os
 from pyspark.sql.functions import *
-
-
-# In[37]:
-
 
 data_dir = '/Users/bartev/dev/gitpie/LearningSparkV2/databricks-datasets/learning-spark-v2/'
 
