@@ -29,6 +29,6 @@ setup(
       greet2=env_var:greet2
       greet3=env_var:greet3
       perform=env_var:perform
-
+      usecontext=use_context:cli
    ''',
 )
