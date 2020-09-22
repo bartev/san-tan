@@ -19,3 +19,8 @@ spark = (pyspark.sql.SparkSession
 
 df = spark.range(0, 10000, 1, 8)
 print(f'>>>>> df.rdd.getNumPartitions(): {df.rdd.getNumPartitions()}')
+
+
+import numpy as np
+
+print(np.arange(0, 30, 3))

@@ -30,7 +30,7 @@ def get_sc():
         print('not redefining sc')
         sc = globals()['sc']
     return scsc = get_sc()
-# In[5]:
+# In[3]:
 
 
 data_names_ages = [('Brooke', 20),
@@ -42,7 +42,7 @@ data_names_ages = [('Brooke', 20),
 dataRDD = sc.parallelize(data_names_ages)
 
 
-# In[6]:
+# In[4]:
 
 
 # Use map and reduceByKey transformations with their 
@@ -54,7 +54,7 @@ agesRDD = (dataRDD.map(lambda x, y: (x, (y, 1)))
           )
 
 
-# In[8]:
+# In[5]:
 
 
 # Same thing, but with a dataframe
