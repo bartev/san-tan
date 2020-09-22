@@ -35,3 +35,5 @@ target/
 
 # config files
 # *.properties
+
+*.parquet/
