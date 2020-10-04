@@ -8,16 +8,26 @@
 # In[1]:
 
 
+
+
+
+# In[1]:
+
+
 from IPython.core.display import display, HTML
 display(HTML("<style>.container { width:95% !important; }</style>"))
 
 
-# In[2]:
+# In[ ]:
 
 
 from pyspark import SparkContext
 
 sc = SparkContext('local', 'Ch4')
+
+
+# In[2]:
+
 
 from pyspark.sql import SparkSession
 
@@ -28,7 +38,7 @@ spark = (SparkSession
     .getOrCreate())
 
 
-# In[4]:
+# In[3]:
 
 
 spark.version
@@ -36,7 +46,7 @@ spark.version
 
 # # Imports
 
-# In[30]:
+# In[5]:
 
 
 import os
@@ -50,7 +60,7 @@ import os
 # 
 # some of the definitions may be different too
 
-# In[31]:
+# In[6]:
 
 
 data_dir = os.path.expanduser('~/dev/data/airline-kaggle')
@@ -65,7 +75,7 @@ fn_airports = os.path.join(data_dir, 'airports.csv')
 fn_airlines
 
 
-# In[33]:
+# In[7]:
 
 
 def lcase_cols(df):
@@ -73,7 +83,7 @@ def lcase_cols(df):
     return df.toDF(*[c.lower() for c in df.columns])
 
 
-# In[40]:
+# In[8]:
 
 
 airlines = (spark
@@ -86,7 +96,7 @@ airlines = (spark
 airlines = lcase_cols(airlines)
 
 
-# In[41]:
+# In[9]:
 
 
 airlines.show()
