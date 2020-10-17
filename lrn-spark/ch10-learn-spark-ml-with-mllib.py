@@ -77,6 +77,8 @@ def db_fname(fname):
 #     * organize a series of transformers and estimators into a single model
 #     * Pipeline is an `estimator`
 #     * `pipeline.fit()` returns a `PipelineModel`, which is a `transformer`
+# * Model
+#     * a Transformer which will return predictions
 
 # ## Data Ingestion and Exploration
 
@@ -744,6 +746,354 @@ print(f'R2: {regressionEvaluator.setMetricName("r2").evaluate(pred_df_saved)}')
 
 
 # # Tree Based Models
+# 
+# https://community.cloud.databricks.com/?o=6130133108755320#notebook/3114109954854034/command/3114109954854035
+
+# Decision trees:
+# 
+# * scale-invariant
+# * depth = longest path from root node to any leaf node
+#     * if depth is too large, risk overfitting
+#     * if too small, underfit
+# * feature prep
+#     * no need to standardize (scale) data
+#     * take care about how to prepare categorical features
+#     * pass to `StringIndexer`
+#     
+# **Do not OHE variables**
+
+# In[229]:
+
+
+from pyspark.ml.regression import DecisionTreeRegressor
+
+
+# In[230]:
+
+
+dt = DecisionTreeRegressor(labelCol='price')
+
+
+# In[231]:
+
+
+# filter for just numeric columns and exclude price (the label)
+numericCols = [field for (field, dataType) in trainDF.dtypes
+               if ((dataType == 'double') & (field != 'price'))]
+
+
+# Since we're on Spark 2.4, we `StringIndexer` only takes a single column.
+# 
+# See this function that was defined above.
+
+# In[244]:
+
+
+categoricalCols = [field for (field, dataType) in trainDF.dtypes if dataType == 'string']
+
+
+# In[237]:
+
+
+# indexOutputCols = [x + 'Index' for x in categoricalCols]
+# oheOutputCols = [x + 'OHE' for x in categoricalCols]
+
+# stringIndexer = StringIndexer(inputCols=categoricalCols,
+#                               outputCols=indexOutputCols,
+#                               handleInvalid='skip')
+# oheEncoder = OneHotEncoder(inputCols=indexOutputCols,
+#                            outputCols=oheOutputCols)
+
+
+# In[238]:
+
+
+categoricalCols
+
+
+# In[233]:
+
+
+# def make_string_indexer(col_name):
+#     """valid values of handleInvalid
+#     skip (filter rows)
+#     error (throw an error)
+#     keep (put in a special additional bucket)
+    
+#     NOTE: spark 3.0 will accept multple columns as input/output
+#     """
+#     encoded_col_name = f'{col_name}_Index'
+#     string_indexer = StringIndexer(inputCol=col_name, 
+#                                    outputCol=encoded_col_name, 
+#                                    handleInvalid='keep')
+#     return string_indexer
+
+
+# In[ ]:
+
+
+
+
+
+# In[239]:
+
+
+stages_cat_str_index = [make_string_indexer(c) for c in cat_fields]
+
+
+# In[243]:
+
+
+indexOutputCols = [indexer.getOutputCol() for indexer in stages_cat_str_index]
+indexOutputCols
+
+
+# # combine output of StringIndexer and numeric columns
+
+# In[249]:
+
+
+assemblerInputs = indexOutputCols + numericCols
+
+vecAssembler = VectorAssembler(inputCols=assemblerInputs, outputCol='features')
+
+
+# In[246]:
+
+
+assemblerInputs
+
+
+# In[248]:
+
+
+trainDF.select('review_scores_rating', 'review_scores_rating_na').toPandas()
+
+
+# Combine stages into a pipeline
+
+# Note: unlike `StringIndexer` in Spark 3.0, I have a list of individual `StringIndexer` objects, so need to add as a list
+
+# In[251]:
+
+
+stages = stages_cat_str_index + [vecAssembler, dt]
+pipeline = Pipeline(stages=stages)
+pipelineModel = pipeline.fit(trainDF)
+
+
+# check the `maxBins` parameter against our data
+# * determines the number of bins into which the continuous featres are discretized or split
+# * no `maxBins` param in `scikit-learn` because all the data an dmodel reside on a single machine
+
+# In[253]:
+
+
+dt.getMaxBins()
+
+
+# In[255]:
+
+
+print(dt.explainParams())
+
+
+# In[256]:
+
+
+dt.setMaxBins(40)
+pipelineModel = pipeline.fit(trainDF)
+
+
+# ## Extract if-then-else rules learned by the decision tree
+
+# In[257]:
+
+
+pipelineModel.stages
+
+
+# In[258]:
+
+
+dtModel = pipelineModel.stages[-1]
+
+
+# In[259]:
+
+
+print(dtModel.toDebugString)
+
+
+# ## Interpreting Feature Importance
+# -----
+# hard to know what feature 12 vs 5 is...
+
+# ### Extract feature importance scores
+
+# In[264]:
+
+
+import pandas as pd
+
+featureImp = (pd.DataFrame(
+    list(zip(vecAssembler.getInputCols(), dtModel.featureImportances)),
+    columns=['feature', 'importance'])
+              .sort_values(by='importance', ascending=False)
+             )
+featureImp
+
+
+# ## Apply model to test set
+
+# In[265]:
+
+
+predDF = pipelineModel.transform(testDF)
+predDF.select('features', 'price', 'prediction').orderBy('price', ascending=False).show()
+
+
+# ## Pitfall
+# 
+# What if we get a massive Airbnb rental? It was 20 bedrooms and 20 bathrooms. What will a decision tree predict?
+# 
+# It turns out decision trees cannot predict any values larger than they were trained on. The max value in our training set was $10,000, so we can't predict any values larger than that (or technically any values larger than the )
+
+# In[266]:
+
+
+from pyspark.ml.evaluation import RegressionEvaluator
+
+regressionEvaluator = RegressionEvaluator(predictionCol="prediction", 
+                                          labelCol="price", 
+                                          metricName="rmse")
+
+rmse = regressionEvaluator.evaluate(predDF)
+r2 = regressionEvaluator.setMetricName("r2").evaluate(predDF)
+print(f"RMSE is {rmse}")
+print(f"R2 is {r2}")
+
+
+# # Random Forest
+
+# * Ensemble
+#     * build many models, and combine/average their predictions
+# * Random forest - ensemble of decision tree
+#     * Bootstrapping samples by rows
+#         * sample with replacement
+#     * each tree is trained on a different bootstrap sample of the data set
+#     * aggregate the predictions
+#     * *bootstrap aggregatine*, or *bagging*
+#     * each tree samples the same number of data points with replacement from the original data set
+#     * `subsamplingRate` - how many data points to sample for each tree
+# * Random feature selection by columns
+#     * With bagging, all the trees are highly correlated
+#     * For each split, only consider a **random subset of columns**
+#         * 1/3 the features for `RandomForeestRegressor`
+#         * $\sqrt{\text{num features}}$ for `RandomForestClassifier`
+#     * Keep each tree shallow (due to this extra randomness. why?)
+#     * each tree is worse than a single decision tree
+#     * each tree is a **weak learner**
+#     * combining weak learners into an ensemble makes th forest more robust than a single decision tree
+# ----
+# * Demonstrates power of distributed machine learning
+#     * can build each tree independently of others
+
+# In[267]:
+
+
+from pyspark.ml.regression import RandomForestRegressor
+
+rf = RandomForestRegressor(labelCol='price', maxBins=40, seed=42)
+
+
+# ## k-fold Cross Validation
+
+# * What data set to use to optimze hyperparameters?
+# * training set -> overfit
+# * testing set -> cannot verify how well model generalizes
+# * validation set!
+
+# * break the data in to k groups
+# * train the model on folds 1-(k-1), and evaluate on fold k
+# * train the model on folds 1-(k-2) + k, and evaluate on fold (k-1)
+# * repeat k times, each time evaluating on a different fold
+# * average the evaluation metrics of the k trials to get an estimate of how it will perform on unseen data
+
+# ## Hyperparameter optimization
+
+# To perform a hyperparameter search in Spark, take the following steps :
+# 
+# 1. Define the estimator you want to evaluate.
+# 
+# 2. Specify which hyperparameters you want to vary, as well as their respective values, using the `ParamGridBuilder`.
+# 
+# 3. Define an `evaluator` to specify which metric to use to compare the various models.
+# 
+# 4. Use the `CrossValidator` to perform cross-validation, evaluating each of the various models.
+# 
+# 
+
+# In[268]:
+
+
+pipeline = Pipeline(stages = stages_cat_str_index + [vecAssembler, rf])
+
+
+# ### Setup `ParamGrid`
+
+# For our `ParamGridBuilder`, we’ll vary our `maxDepth` to be 2, 4, or 6 and `numTrees` (the number of trees in our random forest) to be 10 or 100. This will give us a grid of 6 (3 x 2) different hyperparameter configurations in total:
+# 
+# 
+
+# In[270]:
+
+
+from pyspark.ml.tuning import ParamGridBuilder
+paramGrid = (ParamGridBuilder()
+            .addGrid(rf.maxDepth, [2, 4, 6])
+            .addGrid(rf.numTrees, [10, 100])
+            .build())
+
+
+# ### Setup Evaluator
+
+# Now that we have set up our hyperparameter grid, we need to define how to evaluate each of the models to determine which one performed best. For this task we will use the `RegressionEvaluator`, and we’ll use RMSE as our metric of interest:
+# 
+# 
+
+# In[271]:
+
+
+evaluator = RegressionEvaluator(labelCol='price',
+                               predictionCol='prediction',
+                               metricName='rmse')
+
+
+# ### Do cross-validation
+
+# * We will perform our k-fold cross-validation using the `CrossValidator`, which accepts an `estimator`, `evaluator`, 
+# and `estimatorParamMaps` so that it knows which model to use, how to evaluate the model, 
+# and which hyperparameters to set for the model. 
+# * We can also set the number of folds we 
+# want to split our data into (`numFolds=3`), as well as setting a seed so we have reproducible splits 
+# across the folds (`seed=42`). 
+# * Let’s then fit this cross-validator to our training data set:
+# 
+# 
+
+# In[272]:
+
+
+from pyspark.ml.tuning import CrossValidator
+
+cv = CrossValidator(estimator=pipeline,
+                    evaluator=evaluator,
+                    estimatorParamMaps=paramGrid,
+                    numFolds=3,
+                    seed=42)
+cvModel = cv.fit(trainDF)
+
 
 # In[ ]:
 
