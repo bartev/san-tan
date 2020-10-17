@@ -1095,6 +1095,302 @@ cv = CrossValidator(estimator=pipeline,
 cvModel = cv.fit(trainDF)
 
 
+# How many models does this train?
+# 
+# $19 = (3 \text{ folds}) \times (3 \times 2 \text{ hyperparam configs}) + (1 \text{ final model with optimal params})$
+
+# In[274]:
+
+
+list(zip(cvModel.getEstimatorParamMaps(), cvModel.avgMetrics))
+
+
+# In[279]:
+
+
+p = cvModel.getEstimatorParamMaps()[0]
+
+
+# In[303]:
+
+
+pms = [dict(zip([p.name for p in p.keys()], p.values())) for p in cvModel.getEstimatorParamMaps()]
+
+
+# In[307]:
+
+
+list(zip(np.round(cvModel.avgMetrics, 2), pms))
+
+
+# We can see that the best model from our `CrossValidator` (the one with the lowest RMSE) had 
+# `maxDepth=6` and `numTrees=100`. However, this took a long time to run. 
+# 
+
+# ## Optimizing Pipelines
+
+# ### Parallelism
+
+# * In the preceding code, even though each of the models in the cross-validator is technically independent, `spark.ml` actually trains the collection of models sequentially rather than in parallel. 
+# * In Spark 2.3, a `parallelism` parameter was introduced to solve this problem. 
+# * This parameter determines the number of models to train in parallel, which themselves are fit in parallel. From the Spark Tuning Guide [https://spark.apache.org/docs/latest/ml-tuning.html]
+
+# The value of `parallelism` should be chosen carefully to maximize parallelism without exceeding cluster resources, and larger values may not always lead to improved performance. 
+# 
+# Generally speaking, a value up to 10 should be sufficient for most clusters.
+
+# In[ ]:
+
+
+get_ipython().run_cell_magic('timeit', '', 'cvModel = cv.setParallelism(4).fit(trainDF)')
+
+
+# In[310]:
+
+
+get_ipython().run_cell_magic('timeit', '', 'cvModel = cv.setParallelism(1).fit(trainDF)')
+
+
+# ### Put cross-validator inside the pipeline (instead of pipeline in cross-validator)
+# 
+# * don't repeat stages that don't change
+
+# In[311]:
+
+
+from pyspark.ml.tuning import CrossValidator
+
+cv = CrossValidator(estimator=rf,
+                    evaluator=evaluator,
+                    estimatorParamMaps=paramGrid,
+                    numFolds=3,
+                    parallelism=4,
+                    seed=42)
+
+pipeline = Pipeline(stages=stages_cat_str_index + [vecAssembler, cv])
+
+
+# In[313]:
+
+
+get_ipython().run_cell_magic('timeit', '', 'pipelineModel = pipeline.fit(trainDF)')
+
+
+# In[314]:
+
+
+predDF = pipelineModel.transform(testDF)
+
+regressionEvaluator = RegressionEvaluator(predictionCol="prediction", labelCol="price", metricName="rmse")
+
+rmse = regressionEvaluator.evaluate(predDF)
+r2 = regressionEvaluator.setMetricName("r2").evaluate(predDF)
+print(f"RMSE is {rmse}")
+print(f"R2 is {r2}")
+
+
+# # Distributed K-Means
+
+# Use the iris dataset
+
+# In[316]:
+
+
+from sklearn.datasets import load_iris
+import pandas as pd
+
+
+# Load data, and convert to Spark data frame
+
+# In[317]:
+
+
+iris = load_iris()
+
+
+# In[319]:
+
+
+type(iris)
+
+
+# In[320]:
+
+
+iris_pd = pd.concat([pd.DataFrame(iris.data, columns=iris.feature_names),
+                     pd.DataFrame(iris.target, columns=['label'])],
+                   axis=1)
+
+
+# In[321]:
+
+
+irisDF = spark.createDataFrame(iris_pd)
+
+
+# In[322]:
+
+
+irisDF.show()
+
+
+# Notice that we have four values as "features".  We'll reduce those down to two values (for visualization purposes) and convert them to a `DenseVector`.  To do that we'll use the `VectorAssembler`. 
+
+# In[324]:
+
+
+from pyspark.ml.feature import VectorAssembler
+
+vecAssembler = VectorAssembler(inputCols=['sepal length (cm)', 'sepal width (cm)'],
+                               outputCol='features')
+irisTwoFeaturesDF = vecAssembler.transform(irisDF)
+irisTwoFeaturesDF.show()
+
+
+# In[326]:
+
+
+from pyspark.ml.clustering import KMeans
+
+kmeans = KMeans(k=3, seed=221, maxIter=20)
+
+# fit the estimator, and pass in irisTwoFeaturesDF
+model = kmeans.fit(irisTwoFeaturesDF)
+
+
+# In[327]:
+
+
+# obtain clusterCenters from KMeansModel
+centers = model.clusterCenters()
+
+# use the model to transform the DF by adding cluster predictions
+transformerDF = model.transform(irisTwoFeaturesDF)
+
+print(centers)
+
+
+# In[328]:
+
+
+modelCenters = []
+iterations = [0, 2, 4, 7, 10, 20]
+for i in iterations:
+    kmeans = KMeans(k=3, seed=221, maxIter=i)
+    model = kmeans.fit(irisTwoFeaturesDF)
+    modelCenters.append(model.clusterCenters())
+
+
+# In[330]:
+
+
+print("modelCenters:")
+for centroids in modelCenters:
+  print(centroids)
+
+
+# Let's visualize how our clustering performed against the true labels of our data.
+# 
+# Remember: K-means doesn't use the true labels when training, but we can use them to evaluate. 
+# 
+# Here, the star marks the cluster center.
+
+# In[332]:
+
+
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import numpy as np
+
+def prepareSubplot(xticks, yticks, figsize=(10.5, 6), hideLabels=False, gridColor='#999999', 
+                gridWidth=1.0, subplots=(1, 1)):
+    """Template for generating the plot layout."""
+    plt.close()
+    fig, axList = plt.subplots(subplots[0], subplots[1], figsize=figsize, facecolor='white', 
+                               edgecolor='white')
+    if not isinstance(axList, np.ndarray):
+        axList = np.array([axList])
+    
+    for ax in axList.flatten():
+        ax.axes.tick_params(labelcolor='#999999', labelsize='10')
+        for axis, ticks in [(ax.get_xaxis(), xticks), (ax.get_yaxis(), yticks)]:
+            axis.set_ticks_position('none')
+            axis.set_ticks(ticks)
+            axis.label.set_color('#999999')
+            if hideLabels: axis.set_ticklabels([])
+        ax.grid(color=gridColor, linewidth=gridWidth, linestyle='-')
+        map(lambda position: ax.spines[position].set_visible(False), ['bottom', 'top', 'left', 'right'])
+        
+    if axList.size == 1:
+        axList = axList[0]  # Just return a single axes object for a regular plot
+    return fig, axList
+
+
+# In[335]:
+
+
+data = irisTwoFeaturesDF.select("features", "label").collect()
+features, labels = zip(*data)
+
+x, y = zip(*features)
+centers = modelCenters[5]
+centroidX, centroidY = zip(*centers)
+colorMap = 'Set1'  # was 'Set2', 'Set1', 'Dark2', 'winter'
+
+fig, ax = prepareSubplot(np.arange(-1, 1.1, .4), np.arange(-1, 1.1, .4), figsize=(8,6))
+plt.scatter(x, y, s=14**2, c=labels, edgecolors='#8cbfd0', alpha=0.80, cmap=colorMap)
+plt.scatter(centroidX, centroidY, s=22**2, marker='*', c='yellow')
+cmap = cm.get_cmap(colorMap)
+
+colorIndex = [.5, .99, .0]
+for i, (x,y) in enumerate(centers):
+    print(cmap(colorIndex[i]))
+    for size in [.10, .20, .30, .40, .50]:
+        circle1=plt.Circle((x,y),size,color=cmap(colorIndex[i]), alpha=.10, linewidth=2)
+        ax.add_artist(circle1)
+
+ax.set_xlabel('Sepal Length'), ax.set_ylabel('Sepal Width');
+display(fig);
+
+
+# In addition to seeing the overlay of the clusters at each iteration, we can see how the cluster centers moved with each iteration (and what our results would have looked like if we used fewer iterations).
+
+# In[336]:
+
+
+x, y = zip(*features)
+
+oldCentroidX, oldCentroidY = None, None
+
+fig, axList = prepareSubplot(np.arange(-1, 1.1, .4), np.arange(-1, 1.1, .4), figsize=(11, 15),
+                             subplots=(3, 2))
+axList = axList.flatten()
+
+for i,ax in enumerate(axList[:]):
+    ax.set_title('K-means for {0} iterations'.format(iterations[i]), color='#999999')
+    centroids = modelCenters[i]
+    centroidX, centroidY = zip(*centroids)
+    
+    ax.scatter(x, y, s=10**2, c=labels, edgecolors='#8cbfd0', alpha=0.80, cmap=colorMap, zorder=0)
+    ax.scatter(centroidX, centroidY, s=16**2, marker='*', c='yellow', zorder=2)
+    if oldCentroidX and oldCentroidY:
+      ax.scatter(oldCentroidX, oldCentroidY, s=16**2, marker='*', c='grey', zorder=1)
+    cmap = cm.get_cmap(colorMap)
+    
+    colorIndex = [.5, .99, 0.]
+    for i, (x1,y1) in enumerate(centroids):
+      print(cmap(colorIndex[i]))
+      circle1=plt.Circle((x1,y1),.35,color=cmap(colorIndex[i]), alpha=.40)
+      ax.add_artist(circle1)
+    
+    ax.set_xlabel('Sepal Length'), ax.set_ylabel('Sepal Width')
+    oldCentroidX, oldCentroidY = centroidX, centroidY
+
+plt.tight_layout()
+
+display(fig)
+
+
 # In[ ]:
 
 
