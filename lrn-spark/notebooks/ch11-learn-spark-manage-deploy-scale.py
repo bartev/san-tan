@@ -137,6 +137,241 @@ stages = stages_string_indexer + [vecAssembler, rf]
 pipeline = Pipeline(stages=stages)
 
 
+# ## Start logging with MLflow
+# ---
+# * start with `mlflow.start_run()`
+# * end with `mlflow.end_run()`, or, as in this case, put it in a `with` clause to end automatically
+
+# In[37]:
+
+
+import mlflow
+import mlflow.spark
+import pandas as pd
+
+
+# In[38]:
+
+
+with mlflow.start_run(run_name='random-forest') as run:
+    # Log params: num_trees and max_depth
+    mlflow.log_param('num_trees', rf.getNumTrees())
+    mlflow.log_param('max_depth', rf.getMaxDepth())
+    
+    # Log model
+    pipelineModel = pipeline.fit(trainDF)
+    mlflow.spark.log_model(pipelineModel, 'model')
+    
+    # Log metrics: RMSE, R2
+    predDF = pipelineModel.transform(testDF)
+    regressionEvaluator = RegressionEvaluator(predictionCol='prediction',
+                                              labelCol='price')
+    rmse = regressionEvaluator.setMetricName('rmse').evaluate(predDF)
+    r2 = regressionEvaluator.setMetricName('r2').evaluate(predDF)
+    mlflow.log_metrics({'rmse': rmse, 'r2': r2})
+    
+    # Log artifact: feature importance scores
+    rfModel = pipelineModel.stages[-1]
+    pandasDF = (pd.DataFrame(list(zip(vecAssembler.getInputCols(),
+                                      rfModel.featureImportances)),
+                            columns=['feature', 'importance'])
+               .sort_values(by='importance', ascending=False))
+    
+    # First write to local filesystem, then tell MLflow wher to find that file
+    fname_feat_imp = 'feature_importance.csv'
+    pandasDF.to_csv(fname_feat_imp, index=False)
+    mlflow.log_artifact(fname_feat_imp)
+
+
+# ## Seeing the results
+
+# * from the command line, in the directory where the notebook is running, run
+# 
+# ```
+# mlflow ui
+# ```
+# 
+# Then, navigate to `localhost:5000`
+
+# In[43]:
+
+
+from mlflow.tracking import MlflowClient
+
+client = MlflowClient()
+runs = client.search_runs(run.info.experiment_id, 
+                          order_by=["attributes.start_time desc"], 
+                          max_results=1)
+
+run_id = runs[0].info.run_id
+runs[0].data.metrics
+
+
+# In[44]:
+
+
+mlflow.run(
+  "https://github.com/databricks/LearningSparkV2/#mlflow-project-example", 
+  parameters={"max_depth": 5, "num_trees": 100})
+
+
+# ## BV add cross-validator and run MLflow again
+
+# ### Setup `ParamGrid`
+
+# In[45]:
+
+
+from pyspark.ml.tuning import ParamGridBuilder
+paramGrid = (ParamGridBuilder()
+            .addGrid(rf.maxDepth, [2, 4, 6])
+            .addGrid(rf.numTrees, [10, 100])
+            .build())
+
+from pyspark.ml.tuning import CrossValidator
+
+evaluator = RegressionEvaluator(labelCol='price',
+                               predictionCol='prediction',
+                               metricName='rmse')
+cv = CrossValidator(estimator=rf,
+                    evaluator=evaluator,
+                    estimatorParamMaps=paramGrid,
+                    numFolds=3,
+                    parallelism=4,
+                    seed=42)
+
+pipeline = Pipeline(stages=stages_string_indexer + [vecAssembler, cv])
+
+
+# In[68]:
+
+
+from src.models.utils import parse_param_map
+
+
+# In[67]:
+
+
+with mlflow.start_run(run_name='random-forest') as run:
+    # Log model
+    pipelineModel = pipeline.fit(trainDF)
+    mlflow.spark.log_model(pipelineModel, 'model')
+
+    best_model = pipelineModel.stages[-1].bestModel
+    
+    parameters = parse_param_map(best_model.extractParamMap())
+    
+    # Log params: num_trees and max_depth
+    mlflow.log_param('num_trees', parameters['numTrees'])
+    mlflow.log_param('max_depth', parameters['maxDepth'])
+
+    # Log metrics: RMSE, R2
+    predDF = pipelineModel.transform(testDF)
+    regressionEvaluator = RegressionEvaluator(predictionCol='prediction',
+                                              labelCol='price')
+    rmse = regressionEvaluator.setMetricName('rmse').evaluate(predDF)
+    r2 = regressionEvaluator.setMetricName('r2').evaluate(predDF)
+    mlflow.log_metrics({'rmse': rmse, 'r2': r2})
+    
+    # Log artifact: feature importance scores
+#     rfModel = pipelineModel.stages[-1]
+    pandasDF = (pd.DataFrame(list(zip(vecAssembler.getInputCols(),
+                                      best_model.featureImportances)),
+                            columns=['feature', 'importance'])
+               .sort_values(by='importance', ascending=False))
+    
+    # First write to local filesystem, then tell MLflow wher to find that file
+    fname_feat_imp = 'feature_importance.csv'
+    pandasDF.to_csv(fname_feat_imp, index=False)
+    mlflow.log_artifact(fname_feat_imp)
+
+
+# # Batch
+
+# In[78]:
+
+
+from mlflow.tracking import MlflowClient
+
+client = MlflowClient()
+runs = client.search_runs(run.info.experiment_id, 
+                          order_by=["attributes.start_time desc"], 
+                          max_results=1)
+
+run_id = runs[0].info.run_id
+runs[0].data.metrics
+
+
+# In[79]:
+
+
+# Load saved model with MLflow
+import mlflow.spark
+
+pipelineModel = mlflow.spark.load_model(f"runs:/{run_id}/model")
+
+
+# In[80]:
+
+
+# Generate predictions
+inputDF = spark.read.parquet(db_fname('sf-airbnb/sf-airbnb-clean.parquet'))
+
+predDF = pipelineModel.transform(inputDF)
+
+
+# In[92]:
+
+
+from pyspark.sql.functions import col, round
+
+(predDF.select('features', round('price', 3).alias('price'), round('prediction', 2).alias('pred'))
+ .withColumn('error', round(col('pred') - col('price'), 3))
+ .show())
+
+
+# # Streaming
+
+# * when reading in data, use `spark.readStream()` instead of `spark.read()`
+
+# In[94]:
+
+
+pipelineModel = mlflow.spark.load_model(f"runs:/{run_id}/model")
+
+# Set up simulated streaming data
+repartitionedPath = db_fname('sf-airbnb/sf-airbnb-clean-100p.parquet')
+schema = spark.read.parquet(repartitionedPath).schema
+
+
+# In[95]:
+
+
+streamingData = (spark
+                .readStream
+                .schema(schema) # can set the schema this way
+                .option('maxFilesPerTrigger', 1)
+                .parquet(repartitionedPath))
+
+
+# In[96]:
+
+
+# Generate predictions
+streamPred = pipelineModel.transform(streamingData)
+
+
+# In[101]:
+
+
+streamPred.show()
+
+
+# # Model Export Patterns for Real-Time Inference
+# 
+# * MLeap https://mleap-docs.combust.ml
+# * ONNX https://onnx.ai
+
 # In[ ]:
 
 
