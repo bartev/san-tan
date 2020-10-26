@@ -68,3 +68,27 @@ Project Organization
 --------
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
+
+
+Using mleap
+-----------
+
+https://mleap-docs.combust.ml/getting-started/py-spark.html
+
+To add MLeap to your PySpark project, just clone the git repo, add the mleap/pyhton path, and import mleap.pyspark
+
+```
+git clone git@github.com:combust/mleap.git
+```
+
+Then in your python environment do:
+
+```
+import sys
+sys.path.append('<git directory>/mleap/python')
+
+import mleap.pyspark
+```
+
+Note: the import of mleap.pyspark needs to happen before any other PySpark libraries are imported.
+

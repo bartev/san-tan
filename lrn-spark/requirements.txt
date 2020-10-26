@@ -20,3 +20,4 @@ mleap
 pyspark==2.4.5
 
 mlflow
+mleap

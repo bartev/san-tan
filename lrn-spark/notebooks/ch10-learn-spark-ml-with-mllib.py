@@ -23,7 +23,7 @@ from IPython.core.display import display, HTML
 display(HTML("<style>.container { width:95% !important; }</style>"))
 
 
-# In[337]:
+# In[3]:
 
 
 get_ipython().run_line_magic('load_ext', 'blackcellmagic')
@@ -31,7 +31,7 @@ get_ipython().run_line_magic('load_ext', 'blackcellmagic')
 
 # # Imports
 
-# In[3]:
+# In[4]:
 
 
 import os
@@ -40,7 +40,7 @@ import os.path as path
 
 # # Spark
 
-# In[11]:
+# In[6]:
 
 
 from pyspark.sql import SparkSession
@@ -56,7 +56,7 @@ spark = (SparkSession
 
 # # Functions
 
-# In[4]:
+# In[7]:
 
 
 def db_fname(fname):
@@ -90,25 +90,25 @@ def db_fname(fname):
 
 # They've done some cleansing already. See Databricks communitiy edition notebook
 
-# In[8]:
+# In[9]:
 
 
 filePath = db_fname('sf-airbnb/sf-airbnb-clean.parquet')
 
 
-# In[12]:
+# In[10]:
 
 
 airbnbDF = spark.read.parquet(filePath)
 
 
-# In[13]:
+# In[11]:
 
 
 airbnbDF.select('neighbourhood_cleansed', 'room_type', 'bedrooms', 'bathrooms', 'number_of_reviews', 'price').show(5)
 
 
-# In[15]:
+# In[12]:
 
 
 trainDF, testDF = airbnbDF.randomSplit([0.8, 0.2], seed=42)
@@ -121,7 +121,7 @@ print(f"""There are {trainDF.count()} rows in the training set, and {testDF.coun
 
 # Use `VectorAssembler` to combine all columns into a single vector. https://spark.apache.org/docs/latest/api/python/pyspark.ml.html#pyspark.ml.feature.VectorAssembler
 
-# In[17]:
+# In[13]:
 
 
 from pyspark.ml.feature import VectorAssembler
@@ -130,13 +130,13 @@ vecTrainDF = vecAssembler.transform(trainDF)
 vecTrainDF.select('bedrooms','features', 'price').show(10)
 
 
-# In[20]:
+# In[14]:
 
 
 vecAssembler.getInputCols()
 
 
-# In[21]:
+# In[15]:
 
 
 vecAssembler.getOutputCol()
@@ -144,7 +144,7 @@ vecAssembler.getOutputCol()
 
 # ## Using Estimators to Build Models
 
-# In[26]:
+# In[16]:
 
 
 from pyspark.ml.regression import LinearRegression
@@ -205,13 +205,19 @@ for m in mp:
 
 # `pipelineModel` is a `transformer`
 
-# In[44]:
+# In[17]:
 
 
 from pyspark.ml import Pipeline
 
 pipeline = Pipeline(stages=[vecAssembler, lr])
 pipelineModel = pipeline.fit(trainDF)
+
+
+# In[18]:
+
+
+type(pipelineModel)
 
 
 # Apply it to our test data set
