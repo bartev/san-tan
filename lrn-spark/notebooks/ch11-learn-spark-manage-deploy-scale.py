@@ -2,6 +2,9 @@
 # coding: utf-8
 
 # # Description
+# 
+# ----
+# https://learning.oreilly.com/library/view/learning-spark-2nd/9781492050032/ch11.html#managingcomma_deployingcomma_and_scaling
 
 # # Setup
 
