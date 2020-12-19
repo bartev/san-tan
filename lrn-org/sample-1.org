@@ -1,0 +1,46 @@
+#+title: MY PROJECT
+#+STARTUP: showall
+
+* header 1 
+** sub-head A 
+some text here
+** b
+** sub-head B 
+other text not there
+if I edit the text here, it also edits in the main file
+*** sub-sub head i 
+** a
+** c
+** 2020-12-16
+* header 2 
+
+
+
+* try tables
+** start with a =|=
+| this is the content of the firs cell | boo |
+| <10>                                 | <5> |
+| next cell                            | tee |
+| press tab to get another cell        | hee |
+** Or use =C-c |=, and specify the size. Tab to go between cells
+
+| <5> | <10> | <6> | <3> |
+|   A | B    | C   | D   |
+|-----+------+-----+-----|
+|   1 | I    | i   | A   |
+|   2 | II   | ii  | B   |
+|   3 | III  | iii | C   |
+** comma separated works too.
+Select the region, then press =C-c |=
+
+| some | comma separated | values |
+** Group columns
+
+|   |  N | N^2 | N^3 | N^4 | sqrt(n) | sqrt[4](N) |
+|---+----+-----+-----+-----+---------+------------|
+| /  | <> |   < |     |   > |       < |          > |
+| # |  1 |   1 |   1 |   1 |       1 |          1 |
+| # |  2 |   4 |   8 |  16 |  1.4142 |     1.1892 |
+| # |  3 |   9 |  27 |  81 |  1.7321 |     1.3161 |
+
+* Org-plot

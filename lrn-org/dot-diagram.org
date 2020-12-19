@@ -1,0 +1,27 @@
+Creating simple process step diagrams using dot and tables
+
+[[https://orgmode.org/worg/org-tutorials/org-dot-diagrams.html]]
+
+* Define process elements
+
+#+name: example-node-table
+| *node*       | *label*          | *shape*   | *fillcolor* |
+|------------+----------------+---------+-----------|
+| S_start    | start          | ellipse | green     |
+| S_fill     | fill form      |         |           |
+| S_send     | send form      |         |           |
+| S_complete | form complete? | diamond | yellow    |
+| S_do       | do task        |         | red       |
+| S_end      | end            | ellipse |           |
+
+#+name: example-graph
+| from       | to         | label |
+|------------+------------+-------|
+| S_start    | S_fill     |       |
+| S_fill     | S_send     |       |
+| S_send     | S_complete |       |
+| S_complete | S_fill     | N     |
+| S_complete | S_do       | Y     |
+| S_do       | S_end      |       |
+
+* elisp code to generate diagram using dot
