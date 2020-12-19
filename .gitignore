@@ -37,3 +37,6 @@ target/
 # *.properties
 
 *.parquet/
+
+.clj-kondo/
+.lsp/
