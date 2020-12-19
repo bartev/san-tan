@@ -1,5 +1,0 @@
-<SPEECH 1><ACT 3><SCENE 2><42%>
-<GENTLEMAN>	<44%>
-	We'll wait upon your lordship.
-</GENTLEMAN>
-

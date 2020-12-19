@@ -1,0 +1,116 @@
+Literal examples
+
+ [[https://orgmode.org/manual/Literal-Examples.html]]
+
+
+* How-to execute a block
+type =C-c C-c= at the end of the block (after =#+end_src=)
+* example block
+
+#+begin_example
+some example from a text file
+#+end_example
+
+* small example using colon
+
+: some small example 
+
+#+begin_src emacs-lisp -n
+    (defun org-xor (a b)
+      "Exclusive or."
+      (if a (not b) b))
+#+end_src
+
+#+begin_src emacs-lisp
+;; these numbers should be continued
+(message "this is line ?")
+#+end_src
+
+* adding named positions
+
+#+begin_src emacs-lisp +n -r
+    (save-excursion             (ref:sc)
+      (goto-char (point-min)))  (ref:jump)
+#+end_src
+
+In line [[(sc)]] we remember the current position. [[(jump)][Line (jump)]]
+
+
+src_python{def main: print("hi")}
+
+* multi-line header arguments on unnamed code block
+
+#+HEADER: :var data1=1 
+#+BEGIN_SRC emacs-lisp :var data2=2
+(message "data1:%s, data2:%s data1 data2")
+#+END_SRC
+
+#+results: 
+: data1:1, data2:2 
+
+* evaluate the length of an org table
+
+#+name: example-table
+| 1 |
+| 2 |
+| 3 |
+| 4 |
+
+#+name: table-length
+#+begin_src emacs-lisp :var table=example-table
+(length table)
+#+end_src
+
+#+RESULTS: table-length
+: 4
+
+** put results into a file
+
+#+name: table-length2
+#+begin_src emacs-lisp :var table=example-table  :results file :file tbl-length.csv
+(length table)
+#+end_src
+
+#+RESULTS: table-length2
+[[file:tbl-length.csv]]
+
+
+** Silent results
+#+name: table-length-3
+#+begin_src emacs-lisp :var table=example-table :results silent
+(length table)
+#+end_src
+
+* Write to a file
+
+#+begin_src sh :results file :file script.sh :file-mode (identity #o755)
+echo "#!/bin/bash"
+echo "echo Hello World"
+
+#+end_src
+
+#+RESULTS:
+[[file:script.sh]]
+
+* Post processing
+
+#+NAME: attr_wrap
+#+BEGIN_SRC sh :var data="" :var width="\\textwidth" :results output
+  echo "#+ATTR_LATEX: :width $width"
+  echo "$data"
+#+END_SRC
+
+#+HEADER: :file /tmp/it.png
+#+BEGIN_SRC dot :post attr_wrap(width="5cm", data=*this*) :results drawer
+digraph{ a -> b; 
+  b -> c; 
+  c -> a;    
+  c -> c; 
+  c -> b; }
+#+end_src
+
+#+RESULTS:
+:results:
+#+ATTR_LATEX: :width 5cm
+[[file:/tmp/it.png]]
+:end:

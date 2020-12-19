@@ -1,0 +1,81 @@
+% Created 2020-12-18 Fri 00:06
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Bartev Vartanian}
+\date{\today}
+\title{}
+\hypersetup{
+ pdfauthor={Bartev Vartanian},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.1 (Org mode 9.3)}, 
+ pdflang={English}}
+\begin{document}
+
+\tableofcontents
+
+Literal examples
+
+\url{https://orgmode.org/manual/Literal-Examples.html}
+
+
+\section{example block}
+\label{sec:org48e3d08}
+
+\begin{verbatim}
+some example from a text file
+\end{verbatim}
+
+\section{small example using colon}
+\label{sec:orga68e692}
+
+\begin{verbatim}
+some small example 
+\end{verbatim}
+
+
+\begin{verbatim}
+1  (defun org-xor (a b)
+2    "Exclusive or."
+3    (if a (not b) b))
+\end{verbatim}
+
+\begin{verbatim}
+;; these numbers should be continued
+(message "this is line ?")
+\end{verbatim}
+
+\section{adding named positions}
+\label{sec:org2558911}
+
+\begin{verbatim}
+4  (save-excursion
+5    (goto-char (point-min)))
+\end{verbatim}
+
+In line 4 we remember the current position. Line 5
+
+
+==
+
+\section{multi-line header arguments on unnamed code block}
+\label{sec:org0cf53e7}
+
+\begin{verbatim}
+(message "data1:%S, data2:%S data1 data2")
+\end{verbatim}
+\end{document}

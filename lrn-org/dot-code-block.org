@@ -1,0 +1,33 @@
+* Use dot to generate diagram
+[[https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-dot.html]]
+
+* requirements and setup
+#+begin_src emacs-lisp
+(org-babel-do-load-languages
+'org-babel-load-languages
+'((dot . t)))
+
+(use-package graphviz-dot-mode)
+#+end_src
+
+* org mode features for dot source code blocks
+
+** Header arguments
+
+#+begin_src emacs-lisp
+(mapcar #'(lambda (x)
+(princ (format "%s [label =\"%s\", shape = \"box\"];\n"
+(first x) (second x)))) table)
+
+(princ (format "%s -- %s;\n" (first (first table)) (first (second table))))
+#+end_src
+
+#+name: make-dot
+#+begin_src emacs-lisp :var table=dot-eg-table :results output :exports none
+(mapcar #'(lambda (x)
+(princ (format "%s [label =\"%s\", shape = \"box\"];\n"
+(first x) (second x)))) table)
+
+(princ (format "%s -- %s;\n" (first (first table)) (first (second table))))
+
+#+end_src

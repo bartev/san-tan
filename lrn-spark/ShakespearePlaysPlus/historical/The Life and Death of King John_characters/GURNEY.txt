@@ -1,5 +1,0 @@
-<SPEECH 1><ACT 1><SCENE 1><9%>
-<GURNEY>	<9%>
-	Good leave, good Philip.
-</GURNEY>
-
