@@ -1,0 +1,22 @@
+- Write code in code blocks (shortcut "< m" for elisp block)
+- execute with "C-x C-e"
+
+* More Complex Functions
+
+** example exercises
+Write an interactive function with an optional argument that tests
+whether its argument, a number, is greater than or equal to, or else,
+less than the value of ‘fill-column’, and tells you which, in a message.
+However, if you do not pass an argument to the function, use 56 as a
+default value.
+
+#+begin_src emacs-lisp
+(defun gt-fill? (&optional val)
+  (let* ((check-val (or val 56))
+         (is-ge? (> check-val fill-column))
+         (res (if is-ge? "greater" "less")))
+    (message "%d is %s than fill-column (%d)" check-val res fill-column)))
+
+(gt-fill? 25)
+(gt-fill? 85)
+#+end_src
