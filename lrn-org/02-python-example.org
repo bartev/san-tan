@@ -1,0 +1,53 @@
+#+title: Example org file
+#+author: Bartev Vartanian
+#+date: year:month:day
+
+* Revamp orgmode.org website
+
+The /beauty/ of org *must* be shared. Don't forget about the +strikethrough+ _option_.
+[[http://www.google][my link]]
+
+** TODO Make screenshots
+
+** TODO Restyle site CSS
+
+** TODO Check Css on main pages [%]
+
+* learn org
+
+org makes easy things trivial and complex things practical.
+
+You don't need to learn Org before using org.
+
+** Feedback
+
+#+include: "other/feedback.org*manual" :only-contents t 
+
+** Check CSS minification ratios
+
+
+#+begin_src python
+  from pathlib import Path
+  p = Path('.')
+
+  paths = [str(f) for f in sorted(p.iterdir())]
+  return '\n'.join(paths)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+.#02-python-example.org
+01-literal-examples.org
+01-literal-examples.pdf
+01-literal-examples.tex
+02-python-example.org
+dot-code-block.org
+dot-diagram.org
+org-plot-example.org
+sample-1.org
+sample-1.org~
+script.sh
+tbl-length.csv
+#+end_example
+
+

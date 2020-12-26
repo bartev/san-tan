@@ -1,0 +1,69 @@
+#+title: Embedded LaTex
+#+date: 2020-12-18
+#+author: Bartev Vartanian
+#+email: bartev@apple.com
+#+language: en
+#+select_tags: export
+
+
+* Here is some LaTex
+
+The radius of the sun is R_sun = 6.96 x 10^8 m.
+
+\begin{equation}               % arbitrary environment
+x \sqrt{b}                     % even tables, figures
+\end{equation}                 % etc
+
+If $a^2=b$ and \( b = 2 \), then the solution must be
+either $$ a = +\sqrt{2} $$ or \[ a = -\sqrt{2} \] .
+
+* Here is some LaTex
+
+#+begin_export latex
+
+The radius of the sun is R_sun = 6.96 x 10^8 m.
+
+\begin{equation}               % arbitrary environment
+x \sqrt{b}                     % even tables, figures
+\end{equation}                 % etc
+
+If $a^2=b$ and \( b = 2 \), then the solution must be
+either $$ a = +\sqrt{2} $$ or \[ a = -\sqrt{2} \] .
+
+#+end_export
+
+
+* Literal exampls
+
+#+begin_example
+  Some example from a text file
+#+end_example
+
+** simple example
+: Some example with a colon
+
+* From emacs lisp
+
+#+begin_src emacs-lisp
+  (defun org-xor (a b)
+    "Exclusive or"
+    (if a (not b) b))
+#+end_src
+
+* Adding footnote
+
+The org homepage [fn:1] looks better than it used to.
+
+* completion 
+
+#+begin_note
+some note structure
+#+end_note
+
+#+begin_example
+and an example structure
+#+end_example
+
+* Footnotes
+
+[fn:1] the link is [[https://orgmode.org]] 

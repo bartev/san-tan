@@ -1,0 +1,86 @@
+% Created 2020-12-18 Fri 23:38
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Bartev Vartanian}
+\date{2020-12-18}
+\title{Embedded LaTex}
+\hypersetup{
+ pdfauthor={Bartev Vartanian},
+ pdftitle={Embedded LaTex},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.1 (Org mode 9.3)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+
+\section{Here is some LaTex}
+\label{sec:org45ff123}
+
+The radius of the sun is R\textsubscript{sun} = 6.96 x 10\textsuperscript{8} m.
+
+\begin{equation}               \% arbitrary environment
+x \sqrt{b}                     \% even tables, figures
+\end{equation}                 \% etc
+
+If \(a^2=b\) and \(b = 2\), then the solution must be
+either $$ a = +\sqrt{2} $$ or \[ a = -\sqrt{2} \] .
+
+\section{Here is some LaTex}
+\label{sec:org0d843fe}
+
+
+The radius of the sun is R_sun = 6.96 x 10^8 m.
+
+\begin{equation}               % arbitrary environment
+x \sqrt{b}                     % even tables, figures
+\end{equation}                 % etc
+
+If $a^2=b$ and \( b = 2 \), then the solution must be
+either $$ a = +\sqrt{2} $$ or \[ a = -\sqrt{2} \] .
+
+
+\section{Literal exampls}
+\label{sec:org27f5ef4}
+
+\begin{verbatim}
+Some example from a text file
+\end{verbatim}
+
+\subsection{simple example}
+\label{sec:org7f3aea5}
+\begin{verbatim}
+Some example with a colon
+\end{verbatim}
+
+\section{From emacs lisp}
+\label{sec:org4ff8cb7}
+
+\begin{verbatim}
+(defun org-xor (a b)
+  "Exclusive or"
+  (if a (not b) b))
+\end{verbatim}
+
+\section{Adding footnote}
+\label{sec:orgcc2ccf0}
+
+The org homepage \footnote{the link is \url{https://orgmode.org}} looks better than it used to.
+\end{document}

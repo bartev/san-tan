@@ -1,0 +1,150 @@
+
+#+begin_src  ruby
+  require 'date'
+  "This file was laste evaluated on #{Date.today}"
+#+end_src
+
+#+RESULTS:
+: This file was laste evaluated on 2020-12-25
+
+#+begin_src shell
+  ls -la
+#+end_src
+
+#+RESULTS:
+| total       | 328 |        |       |       |     |    |       |                      |    |                          |
+| drwxr-xr-x  |   8 | bartev | staff |   256 | Dec | 25 | 23:20 | .                    |    |                          |
+| lrwxr-xr-x  |   1 | bartev | staff |    24 | Dec | 25 | 23:19 | .#01-code-blocks.org | -> | bartev@masis.local.69303 |
+| drwxr-xr-x  |  19 | bartev | staff |   608 | Dec | 25 | 22:48 | ..                   |    |                          |
+| -rw-r--r--@ |   1 | bartev | staff |  9448 | Dec | 25 | 23:20 | 01-code-blocks.html  |    |                          |
+| -rw-r--r--@ |   1 | bartev | staff |  9432 | Dec | 25 | 23:18 | 01-code-blocks.html~ |    |                          |
+| -rw-r--r--  |   1 | bartev | staff |   334 | Dec | 25 | 23:19 | 01-code-blocks.org   |    |                          |
+| -rw-r--r--@ |   1 | bartev | staff | 85443 | Dec | 25 | 23:20 | 01-code-blocks.pdf   |    |                          |
+| -rw-r--r--  |   1 | bartev | staff |   841 | Dec | 25 | 23:20 | 01-code-blocks.tex   |    |                          |
+
+* Source code execution
+
+** Ruby
+#+begin_src ruby
+  require 'date'
+  "This file was last evaluated on #{Date.today}"
+#+end_src
+
+#+RESULTS:
+: This file was last evaluated on 2020-12-25
+
+** Shell
+
+In the Org-mode file:
+
+#+begin_src sh
+  echo "This file takes up `du -h 01-code-blocks.org |sed 's/\([0-9k]*\)[ ]*org-babel.org/\1/'`"
+#+end_src
+
+#+RESULTS:
+| This file takes up 4.0K | 01-code-blocks.org |
+
+** R
+
+What are the most common words in this file? In the Org-mode file:
+
+#+begin_src R :colnames yes
+  words <- tolower(scan("intro.org", what="", na.strings=c("|",":")))
+  t(sort(table(words[nchar(words) > 3]), decreasing=TRUE)[1:10])
+#+end_src
+HTML export of code:
+
+words <- tolower(scan("intro.org", what="", na.strings=c("|",":")))
+t(sort(table(words[nchar(words) > 3]), decreasing=TRUE)[1:10])
+
+** python function
+
+    #+name: atimesb
+    #+header: :var a=0 b=0
+    #+begin_src python
+return a * b
+    #+end_src
+
+    #+RESULTS: atimesb
+    : 0
+
+
+    #+call: atimesb(4, 8)
+
+    #+RESULTS:
+    : 32
+    
+    #+call: atimesb(a=3, b=9)
+
+    #+RESULTS:
+    : 27
+* complex example with table as input
+
+
+#+tblname: fibonacci-inputs
+| 1 | 2 | 3 | 4 |  5 |  6 |  7 |  8 |  9 | 10 |
+| 2 | 4 | 6 | 8 | 10 | 12 | 14 | 16 | 18 | 20 |
+
+
+#+name: fibonacci-seq
+#+begin_src emacs-lisp :var fib-inputs=fibonacci-inputs
+  (defun fibonacci (n)
+    (if (or (= n 0) (= n 1))
+        n
+      (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))
+
+  (mapcar (lambda (row)
+            (mapcar #'fibonacci row)) fib-inputs))
+#+end_src
+
+#+RESULTS: fibonacci-seq
+| 1 | 1 | 2 |  3 |  5 |   8 |  13 |  21 |   34 |   55 |
+| 1 | 3 | 8 | 21 | 55 | 144 | 377 | 987 | 2584 | 6765 |
+
+
+* in-line code blocks
+
+src_python[:session]{x = 4}
+src_python[:session]{10 * x}
+
+* meta-programming language for org-mode
+
+#+name: directories
+#+begin_src  sh :results replace
+  cd ~ && du -sc * | grep -v total
+#+end_src
+
+#+RESULTS: directories
+|    207272 | Applications                |
+|      6616 | Box Sync                    |
+|    440224 | Desktop                     |
+|   1383120 | Documents                   |
+|   2721824 | Downloads                   |
+|        24 | KRB5                        |
+| 232317840 | Library                     |
+|     11088 | Make it Meaningul Cards.pdf |
+|     82832 | Map Downloader              |
+|  25224656 | Movies                      |
+|  64043288 | Music                       |
+| 300676992 | Pictures                    |
+|        16 | Public                      |
+|         0 | PycharmProjects             |
+|        16 | Scans                       |
+|         0 | Sites                       |
+|       104 | bin                         |
+|         8 | certs                       |
+|  55900936 | dev                         |
+|        48 | license.html                |
+|         0 | org                         |
+|         0 | scikit_learn_data           |
+|         0 | seaborn-data                |
+|         8 | virtualenv.ini              |
+
+#+name: directory-pie-chart(dirs=directories)
+#+begin_src R :session R-pie-example :file dirs.png :var dirs=directories
+pie(dirs[,1], labels=dirs[,2])
+#+end_src
+
+#+RESULTS: directory-pie-chart(dirs=directories)
+
+

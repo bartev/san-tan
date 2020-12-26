@@ -1,0 +1,130 @@
+% Created 2020-12-26 Sat 00:43
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Bartev Vartanian}
+\date{\today}
+\title{}
+\hypersetup{
+ pdfauthor={Bartev Vartanian},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.1 (Org mode 9.4.3)}, 
+ pdflang={English}}
+\begin{document}
+
+\tableofcontents
+
+\begin{verbatim}
+require 'date'
+"This file was laste evaluated on #{Date.today}"
+\end{verbatim}
+
+\begin{verbatim}
+ls -la
+\end{verbatim}
+
+\section{Source code execution}
+\label{sec:orgc087493}
+
+\subsection{Ruby}
+\label{sec:org543ca1c}
+\begin{verbatim}
+require 'date'
+"This file was last evaluated on #{Date.today}"
+\end{verbatim}
+
+\subsection{Shell}
+\label{sec:orge672131}
+
+In the Org-mode file:
+
+\begin{verbatim}
+echo "This file takes up `du -h 01-code-blocks.org |sed 's/\([0-9k]*\)[ ]*org-babel.org/\1/'`"
+\end{verbatim}
+
+\subsection{R}
+\label{sec:org2e5ebfa}
+
+What are the most common words in this file? In the Org-mode file:
+
+\begin{verbatim}
+words <- tolower(scan("intro.org", what="", na.strings=c("|",":")))
+t(sort(table(words[nchar(words) > 3]), decreasing=TRUE)[1:10])
+\end{verbatim}
+HTML export of code:
+
+words <- tolower(scan("intro.org", what="", na.strings=c("|",":")))
+t(sort(table(words[nchar(words) > 3]), decreasing=TRUE)[1:10])
+
+\subsection{python function}
+\label{sec:orgb582d32}
+
+\begin{verbatim}
+return a * b
+\end{verbatim}
+
+
+\begin{verbatim}
+32
+\end{verbatim}
+
+
+\begin{verbatim}
+27
+\end{verbatim}
+\section{complex example with table as input}
+\label{sec:org4784756}
+
+
+\begin{table}[htbp]
+\label{tab:orgb859955}
+\centering
+\begin{tabular}{rrrrrrrrrr}
+1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10\\
+2 & 4 & 6 & 8 & 10 & 12 & 14 & 16 & 18 & 20\\
+\end{tabular}
+\end{table}
+
+
+\begin{verbatim}
+(defun fibonacci (n)
+  (if (or (= n 0) (= n 1))
+      n
+    (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))
+
+(mapcar (lambda (row)
+	  (mapcar #'fibonacci row)) fib-inputs))
+\end{verbatim}
+
+
+\section{in-line code blocks}
+\label{sec:org479434f}
+
+\texttt{=
+\{\{\{results(=40})\}\}\}
+
+\section{meta-programming language for org-mode}
+\label{sec:orgba81a45}
+
+\begin{verbatim}
+cd ~ && du -sc * | grep -v total
+\end{verbatim}
+
+\begin{verbatim}
+pie(dirs[,1], labels=dirs[,2])
+\end{verbatim}
+\end{document}
