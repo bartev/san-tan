@@ -1,0 +1,120 @@
+#+title: Bartev's Org Lilypond Scale Example
+#+date: 2020-12-27
+
+* Comments
+This is almost working.
+If I include the =\paper= and =set-global-staf-size= in each block, it works.
+If I try to pull that out into =version-and-paper()=, it creates a full page with a tagline.
+
+* COMMENT Setup
+#+name: version-and-paper()
+#+begin_src emacs-lisp :exports none :noweb tangle
+\version "2.20.0"
+
+#(set-global-staff-size 30)
+
+\paper {
+#(set-paper-size "letter")
+tagline = ##f
+ragged-last-bottom = ##t
+ragged-bottom = ##t
+}
+
+#+end_src
+
+* just the heading
+#+begin_src lilypond :exports results :file just_heading.pdf
+<<version-and-paper>>
+#+end_src
+
+* C-major scale
+This is a basic scale
+
+#+begin_src lilypond :exports results :file c_major.pdf :noweb yes
+<<version-and-paper>>
+
+\score {
+  <<
+  \new Staff \relative c' {
+    c8 d e f  g a b c
+    d c b a   g f e d
+    }
+  >>
+  \header {
+  piece = "C major"
+  }
+}
+#+end_src
+
+* C-major scale 3
+This is a basic scale
+
+#+begin_src lilypond :exports results :file c_major-3.pdf :noweb yes
+
+#(set-global-staff-size 30)
+
+\score {
+  <<
+  \new Staff \relative c' {
+    c8 d e f  g a b c
+    d c b a   g f e d
+    }
+  >>
+  \header {
+  piece = "C major 2"
+  }
+}
+#+end_src
+
+* C-minor scale
+This is a minor scale
+
+#+begin_src lilypond :exports results :file c_minor.pdf :noweb yes
+\version "2.20.0"
+
+#(set-global-staff-size 30)
+
+\paper {
+#(set-paper-size "letter")
+tagline = ##f
+ragged-last-bottom = ##t
+ragged-bottom = ##t
+}
+
+
+\score {
+  <<
+  \new Staff \relative c' {
+    c8 d ees f  g aes bes c
+    d c bes aes   g f ees d
+    }
+  >>
+}
+#+end_src
+
+* C-minor scale 2
+This is a minor scale
+
+#+begin_src lilypond :exports results :file c_minor-2.pdf :noweb yes
+\version "2.20.0"
+
+#(set-global-staff-size 30)
+
+\paper {
+#(set-paper-size "letter")
+tagline = ##f
+ragged-last-bottom = ##t
+ragged-bottom = ##t
+}
+
+
+\score {
+  <<
+  \new Staff \relative c' {
+    c8 d ees f  g aes bes c
+    d c bes aes   g f ees d
+    }
+  >>
+}
+#+end_src
+

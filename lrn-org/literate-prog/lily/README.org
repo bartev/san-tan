@@ -1,0 +1,3 @@
+* Debugging
+turn on =debug-on-entry= =org-babel-load-file=
+[[https://emacs.stackexchange.com/questions/29948/wrong-type-argument-stringp-nil-error-with-org-babel-load-file-function]]

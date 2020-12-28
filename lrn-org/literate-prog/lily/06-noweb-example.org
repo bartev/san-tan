@@ -1,0 +1,16 @@
+
+
+#+name: initialization
+#+begin_src emacs-lisp
+(setq sentence "Never a foot too far, even.")
+#+end_src
+
+
+and the second code block is expanded as
+
+#+begin_src emacs-lisp :noweb yes :tangle yes :exports both
+  <<initialization>>
+  (reverse sentence)
+#+end_src
+
+

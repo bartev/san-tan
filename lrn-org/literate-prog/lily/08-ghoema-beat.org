@@ -1,0 +1,32 @@
+#+title: basic mode example
+#+date: 28 November 2020
+
+This is an example of the ~basic-mode~.
+
+From [[https://gitlab.com/jagrg/emacsconf-2020/-/raw/master/basic-mode.org]]
+
+#+begin_src lilypond :exports results :file ghoema.pdf
+\version "2.20.0"
+\paper  {
+  tagline = ##f
+}
+
+#(define mydrums '((sidestick   cross   #f  3)
+		   (snare       default #f  3)
+		   (bassdrum    default #f -2)))
+
+mystaff = {
+  \override DrumStaff.StaffSymbol.line-positions = #'(-2 3)
+  \set DrumStaff.drumStyleTable = #(alist->hash-table mydrums)
+}
+
+\drums {
+  \mystaff
+  \stemUp
+  bd8[ bd16_> ss ] bd8 ss bd16 \parenthesize ss8 ss16 bd8 ss
+}
+#+end_src
+
+#+caption: The ghoema beat
+#+results:
+[[file:ghoema.pdf]]

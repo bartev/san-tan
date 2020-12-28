@@ -27,6 +27,9 @@ ragged-bottom = ##t
 }
 #+end_src
 
+#+RESULTS:
+[[file:c_major.pdf]]
+
 * C-minor scale
 This is a minor scale
 

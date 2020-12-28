@@ -4,30 +4,21 @@
 #+other-LaTeX_HEADER: \usepackage[cm]{fullpage}
 
 #+name: version-and-paper()
-#+begin_src org :noweb yes
-      \version "2.20.0"
-      \paper{
-      indent=0\mm
-      line-width=170\mm
-      ragged-last-bottom=##t
-      ragged-bottom=##t
-      # oddFooterMarkup=##f
-      # oddHeaderMarkup=##f
-      bookTitleMarkup=##f
-      scoreTitleMarkup=##f
-      tagline=##f
-    }
-    \header{
-      tagline=##f
-  }
+#+begin_src lilypond :exports none
+\version "2.20.0"
+\paper {
+#(set-paper-size "letter")
+tagline = ##f
+ragged-last-bottom = ##t
+ragged-bottom = ##t
+}
 #+end_src
 
-
 * Ionian Mode
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus porta ipsum a enim commodo mollis. 
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus porta ipsum a enim commodo mollis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus porta ipsum a enim commodo mollis. 
 #+LaTeX: \linebreak
 #+ATTR_LaTeX: width=17cm 
-#+begin_src lilypond :file ionian.pdf :noweb yes
+#+begin_src lilypond :file ionian.pdf :exports results
 
   <<version-and-paper>>
   \relative c' { 
@@ -40,10 +31,15 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus porta ipsum a
 [[file:ionian.pdf]]
 
 * Mixolydian - no text
-#+begin_src lilypond :file Mixolydian.pdf :noweb yes
- <<version-and-paper>>
-\relative c' {
-  g a b c d e f g f e d c b a g a b c d e f g f e d c b a g1
+#+LaTeX: \linebreak
+#+ATTR_LaTeX: width=17cm 
+#+begin_src lilypond :file Mixolydian.pdf :exports results
+<<version-and-paper>>
+\relative c'' {
+  g8 a b c d e f g
+  f e d c b a g a b
+  c d e f g f e d c
+  b a g1
 }
 #+end_src
 
@@ -54,10 +50,13 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus porta ipsum a
 This time I have text
 #+LaTeX: \linebreak
 #+ATTR_LaTeX: width=17cm 
-#+begin_src lilypond :file Mixolydian-2.pdf :noweb yes
- <<version-and-paper>>
+#+begin_src lilypond :file Mixolydian-2.pdf :exports results
+<<version-and-paper>>
 \relative c' {
-  g a b c d e f g f e d c b a g a b c d e f g f e d c b a g1
+  g8 a b c d e f g
+  f e d c b a g a b
+  c d e f g f e d c
+  b a g1
 }
 #+end_src
 
