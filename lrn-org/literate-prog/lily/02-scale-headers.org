@@ -1,0 +1,48 @@
+#+title: Bartev's Org Lilypond Scale with headers?
+#+date: 2020-12-27
+
+#+property: header-args:lilypond :session *lily*
+#+property: :exports results
+
+* Setup
+Setup the version and paper
+
+#+begin_src lilypond
+\version "2.20.0"
+\paper {
+#(set-paper-size "letter")
+tagline = ##f
+ragged-last-bottom = ##t
+ragged-bottom = ##t
+}
+#+end_src
+
+* COMMENT C-major scale
+#+begin_src lilypond :file c-major.pdf
+\score {
+  <<
+  \new Staff \relative c' {
+    c8 d e f  g a b c
+    d c b a   g f e d
+    }
+  >>
+  \header {
+  piece = "C major"
+  }
+}
+#+end_src
+
+* COMMENT C-minor scale
+This is a minor scale
+
+#+begin_src lilypond :file c-minor.pdf
+\score {
+  <<
+  \new Staff \relative c' {
+    c8 d ees f  g aes bes c
+    d c bes aes   g f ees d
+    }
+  >>
+}
+#+end_src
+

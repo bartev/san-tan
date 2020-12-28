@@ -1,4 +1,8 @@
 
+* See info at
+[[/Users/bartev/dev/github-bv/worg/org-contrib/babel/intro.org]]
+
+* Simple ruby
 #+begin_src  ruby
   require 'date'
   "This file was laste evaluated on #{Date.today}"
@@ -6,6 +10,8 @@
 
 #+RESULTS:
 : This file was laste evaluated on 2020-12-25
+
+* Simple shell
 
 #+begin_src shell
   ls -la
@@ -145,6 +151,62 @@ src_python[:session]{10 * x}
 pie(dirs[,1], labels=dirs[,2])
 #+end_src
 
-#+RESULTS: directory-pie-chart(dirs=directories)
+* Using Code Blocks in Org Tables
+
+** Example 1: Data Summaries Using R
+Fill in a cell in an org-mode table with avg value of a few numbers
+
+#+name: tbl-example-data
+#+begin_src R
+runif(n=5, min=0, max=1)
+#+end_src
 
 
+NOTE: =tbl-example-data= is a callable function
+
+#+call: tbl-example-data()
+
+#+RESULTS:
+| 0.278560258215293 |
+|  0.11243192339316 |
+| 0.121312657603994 |
+| 0.948590021813288 |
+| 0.140980497235432 |
+
+Now define a source block to calculate the mean of a tble column
+
+#+name: R-mean
+#+begin_src R :var x=""
+colMeans(x)
+#+end_src
+
+Finally, we create the table which is going to make use of the R
+code. This is done using the =org-sbe= ('source block evaluate') macro in
+the table formula line.
+
+#+tblname: summaries
+|              mean |
+|-------------------|
+| 0.385946466168389 |
+#+TBLFM: @2$1='(org-sbe "R-mean" (x "tbl-example-data()"))
+
+
+* Library of Babel
+
+    #+name: square
+    #+header: :var x=0
+    #+begin_src python
+      return x*x
+    #+end_src
+
+    #+RESULTS: square
+    : 0
+
+
+#+lob: square(x=4)
+
+#+RESULTS:
+: 16
+
+* Literate programming
+see 02-literate-prog.org

@@ -1,0 +1,66 @@
+#+title: Scales Again
+#+date: 2020-12-27
+#+OPTIONS: timestamp:nil num:nil toc:nil 
+#+other-LaTeX_HEADER: \usepackage[cm]{fullpage}
+
+#+name: version-and-paper()
+#+begin_src org :noweb yes
+      \version "2.20.0"
+      \paper{
+      indent=0\mm
+      line-width=170\mm
+      ragged-last-bottom=##t
+      ragged-bottom=##t
+      # oddFooterMarkup=##f
+      # oddHeaderMarkup=##f
+      bookTitleMarkup=##f
+      scoreTitleMarkup=##f
+      tagline=##f
+    }
+    \header{
+      tagline=##f
+  }
+#+end_src
+
+
+* Ionian Mode
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus porta ipsum a enim commodo mollis. 
+#+LaTeX: \linebreak
+#+ATTR_LaTeX: width=17cm 
+#+begin_src lilypond :file ionian.pdf :noweb yes
+
+  <<version-and-paper>>
+  \relative c' { 
+    c d e f g a b c b a g f e d c d  
+    e f g a b c b a g f e d c1
+}
+#+end_src
+
+#+RESULTS:
+[[file:ionian.pdf]]
+
+* Mixolydian - no text
+#+begin_src lilypond :file Mixolydian.pdf :noweb yes
+ <<version-and-paper>>
+\relative c' {
+  g a b c d e f g f e d c b a g a b c d e f g f e d c b a g1
+}
+#+end_src
+
+#+RESULTS:
+[[file:Mixolydian.pdf]]
+
+* Mixolydian - with text
+This time I have text
+#+LaTeX: \linebreak
+#+ATTR_LaTeX: width=17cm 
+#+begin_src lilypond :file Mixolydian-2.pdf :noweb yes
+ <<version-and-paper>>
+\relative c' {
+  g a b c d e f g f e d c b a g a b c d e f g f e d c b a g1
+}
+#+end_src
+
+#+RESULTS:
+[[file:Mixolydian.pdf]]
+

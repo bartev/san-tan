@@ -1,0 +1,25 @@
+#+title: Literate programming example
+#+author: Bartev
+
+#+name: hello-world-prefix
+#+begin_src shell :exports none
+  echo "/--------------------\\"
+#+end_src
+
+#+RESULTS: hello-world-prefix
+: /--------------------\
+
+#+name: hello-world-postfix
+#+begin_src shell :exports none
+echo "\--------------------/"
+#+end_src
+
+
+#+name: hello-world
+#+begin_src sh :tangle hello.sh :exports none :noweb yes
+  <<hello-world-prefix>>
+  echo "|    hello world     |"
+  <<hello-world-postfix>>
+#+end_src
+
+

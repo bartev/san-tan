@@ -1,0 +1,127 @@
+#+title: python3 org-babel exporting
+#+date: 2020-12-27
+#+author: Bartev
+
+Local Variables:
+org-babel-after-execute-hook: (lambda () (org-display-inline-images nil t) (org-redisplay-inline-images))
+org-confirm-babel-evaluate: nil
+End:
+
+* Version information
+  #+BEGIN_SRC emacs-lisp -n :exports both
+        (princ (concat
+                (format "Emacs version: %s\n"
+                        (emacs-version))
+                (format "org version: %s\n"
+                        (org-version))))        
+  #+END_SRC
+
+  #+RESULTS:
+  : Emacs version: GNU Emacs 27.1 (build 1, x86_64-apple-darwin18.7.0, NS appkit-1671.60 Version 10.14.6 (Build 18G95))
+  :  of 2020-08-12
+  : org version: 9.4.3
+
+  #+BEGIN_SRC python :results output :exports both
+    import sys
+    print(sys.version)
+  #+END_SRC
+
+  #+RESULTS:
+  : 3.7.7 (v3.7.7:d7c567b08f, Mar 10 2020, 02:56:16) 
+  : [Clang 6.0 (clang-600.0.57)]
+
+* Links and Documentation
+- http://orgmode.org/worg/org-contrib/babel/languages/ob-doc-python.html
+
+* Read from an org table as input
+
+#+name: tableA
+| name  | tokns |
+|-------+-------|
+| Peter |     4 |
+| Paul  |     6 |
+| Mary  |     8 |
+
+#+begin_src python :results output :var tbl=tableA :exports both
+print(tbl)
+#+end_src
+
+#+RESULTS:
+: [['Peter', 4], ['Paul', 6], ['Mary', 8]]
+
+#+begin_src python :results value :var tbl=tableA :exports both
+return tbl
+#+end_src
+
+#+RESULTS:
+| Peter | 4 |
+| Paul  | 6 |
+| Mary  | 8 |
+
+#+begin_src python :results value :var tbl=tableA :exports both :colnames yes
+return tbl
+#+end_src
+
+#+RESULTS:
+| name  | tokns |
+|-------+-------|
+| Peter |     4 |
+| Paul  |     6 |
+| Mary  |     8 |
+
+* generate tables as output
+
+Example 1:
+#+begin_src python -n :exports both :results value table
+    x = list(range(1, 10))
+    y = [xe*3 for xe in x]
+    return [x, y]
+#+end_src
+
+#+RESULTS:
+| 1 | 2 | 3 |  4 |  5 |  6 |  7 |  8 |  9 |
+| 3 | 6 | 9 | 12 | 15 | 18 | 21 | 24 | 27 |
+
+
+Example 2:
+#+begin_src python
+  import numpy as np
+  x = list(range(1, 10))
+  y = [xe*3 for xe in x]
+  return np.array([x, y]).transpose()
+
+#+end_src
+
+#+RESULTS:
+| 1 |  3 |
+| 2 |  6 |
+| 3 |  9 |
+| 4 | 12 |
+| 5 | 15 |
+| 6 | 18 |
+| 7 | 21 |
+| 8 | 24 |
+| 9 | 27 |
+
+
+* Matplotlib
+** plotting of a simple graph
+#+begin_src python :results file :exports both
+  import matplotlib, numpy
+
+  matplotlib.use('Agg')
+  import matplotlib.pyplot as plt
+
+  fig=plt.figure(figsize=(4,2))
+
+  x=numpy.linspace(-15,15)
+  plt.plot(numpy.sin(x)/x)
+  fig.tight_layout()
+  plt.savefig('python3-matplot-fig.png')
+
+  return 'python3-matplot-fig.png' # return filename to org-mode
+#+end_src
+
+#+RESULTS:
+[[file:python3-matplot-fig.png]]
+

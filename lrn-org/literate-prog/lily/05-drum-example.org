@@ -1,0 +1,82 @@
+#+title: Org LilyPond Example
+
+Here's a more complex example for randomising note sequences. The goal
+is to create new reading materials each time the code blocks are
+evaluated.
+
+* Header
+
+We begin with a header.
+
+#+begin_src lilypond
+\version "2.20.0"
+\header {
+  title = "Example"
+  composer =  "Emacs!"
+}
+#+end_src
+
+* Data
+
+Then we add the note sequences to use in the composition.
+
+#+name: table
+| sn4           |
+| sn16 sn8 sn16 |
+| sn16 sn sn8   |
+| sn8 sn16 sn   |
+| r16 sn sn sn  |
+| r8 sn         |
+
+* Function
+
+And a function for shuffling the notes in the [[table]].
+
+#+name: music
+#+begin_src emacs-lisp :var data=table beats=4 repeat=28
+(defun shuffle (seq)
+  (cl-loop for i from (length seq) downto 2
+	   do (cl-rotatef (elt seq (random i))
+			  (elt seq (1- i))))
+  seq)
+
+(let (notes (c 0))
+  (dotimes (_ repeat)
+    (cl-loop for i in (apply #'append (shuffle data))
+	     do (cl-incf c)
+	     if (zerop (% (+ c (1- beats)) beats))
+	     do (push (concat i "\n") notes)
+	     else
+	     do (push (concat i " ") notes)))
+  (mapconcat #'identity notes ""))
+#+end_src
+
+* Score
+
+Finally, we expand the notes inside the lilypond source block. Press
+~C-c C-c~ to view the results.
+
+#+begin_src lilypond
+\score {
+  \drums {
+    <<music()>> \bar "|."
+  }
+}
+#+end_src
+
+#+results:
+
+The =ob-lilypond= library comes with two modes, basic and arrange
+modes. See the [[https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-lilypond.html][Worg website]] for more information.
+
+* Basic-mode
+
+[[file:basic-mode.org]]
+
+* COMMENT
+
+# Local Variables:
+# org-babel-lilypond-arrange-mode: t
+# org-babel-lilypond-play-midi-post-tangle: nil
+# End:
+
